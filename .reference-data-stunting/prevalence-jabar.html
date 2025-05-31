@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>NuSantap - Dashboard</title>
+		<link
+			rel="icon"
+			href="/logo.svg"
+		/>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<style>
+			.shadow-custom {
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			}
+		</style>
+	</head>
+	<body class="flex">
+		<!-- Sidebar -->
+		<div class="fixed-sidebar shadow-custom fixed flex h-full w-60 flex-col justify-between border-r border-gray-300 bg-[#fbfcfe] pt-4">
+			<!-- Sidebar Content -->
+			<div class="flex flex-col space-y-4 px-4">
+				<!-- Title Bar -->
+				<div class="flex items-center space-x-3">
+					<img
+						src="/logo.svg"
+						alt="logo"
+						width="34"
+						height="34"
+					/>
+					<h1 class="text-xl font-bold">NuSantap</h1>
+				</div>
+
+				<!-- Search Bar -->
+				<div class="flex items-center space-x-2">
+					<input
+						type="text"
+						class="w-full rounded-md border bg-white px-2 py-1 shadow"
+						placeholder="Cari menu"
+					/>
+					<!-- IconSearch -->
+					<!-- You can insert your search icon SVG here -->
+				</div>
+
+				<!-- Menu Bar -->
+				<div class="flex flex-col space-y-2 text-sm font-semibold">
+					<a
+						href="/"
+						class="flex items-center space-x-2 rounded-md px-3 py-2 hover:bg-[#f0f4f8]"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="#636b74"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="icon icon-tabler icons-tabler-outline icon-tabler-scan"
+						>
+							<path
+								stroke="none"
+								d="M0 0h24v24H0z"
+								fill="none"
+							/>
+							<path d="M4 7v-1a2 2 0 0 1 2 -2h2" />
+							<path d="M4 17v1a2 2 0 0 0 2 2h2" />
+							<path d="M16 4h2a2 2 0 0 1 2 2v1" />
+							<path d="M16 20h2a2 2 0 0 0 2 -2v-1" />
+							<path d="M5 12l14 0" />
+						</svg>
+						<span>Hasil Scan</span>
+					</a>
+					<a
+						href="/generate-menu"
+						class="flex items-center space-x-2 rounded-md px-3 py-2 hover:bg-[#f0f4f8]"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="#636b74"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="icon icon-tabler icons-tabler-outline icon-tabler-sparkles"
+						>
+							<path
+								stroke="none"
+								d="M0 0h24v24H0z"
+								fill="none"
+							/>
+							<path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z" />
+						</svg>
+						<span>Generate Menu</span>
+					</a>
+					<a
+						href="/prevalence-map"
+						class="flex items-center space-x-2 rounded-md bg-[#dde7ee] px-3 py-2"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="#636b74"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="icon icon-tabler icons-tabler-outline icon-tabler-map"
+						>
+							<path
+								stroke="none"
+								d="M0 0h24v24H0z"
+								fill="none"
+							/>
+							<path d="M3 7l6 -3l6 3l6 -3v13l-6 3l-6 -3l-6 3v-13" />
+							<path d="M9 4v13" />
+							<path d="M15 7v13" />
+						</svg>
+						<span>Peta Prevalensi</span>
+					</a>
+					<a
+						href="/qr?p1=false"
+						class="flex items-center space-x-2 rounded-md px-3 py-2 hover:bg-[#f0f4f8]"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="#636b74"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="icon icon-tabler icons-tabler-outline icon-tabler-qrcode"
+						>
+							<path
+								stroke="none"
+								d="M0 0h24v24H0z"
+								fill="none"
+							/>
+							<path d="M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+							<path d="M7 17l0 .01" />
+							<path d="M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+							<path d="M7 7l0 .01" />
+							<path d="M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+							<path d="M17 7l0 .01" />
+							<path d="M14 14l3 0" />
+							<path d="M20 14l0 .01" />
+							<path d="M14 14l0 3" />
+							<path d="M14 20l3 0" />
+							<path d="M17 17l3 0" />
+							<path d="M20 17l0 3" />
+						</svg>
+						<span>Scan QR Code</span>
+					</a>
+				</div>
+			</div>
+
+			<!-- Bottom Section -->
+			<div class="flex flex-col text-sm">
+				<!-- Additional Menu Items -->
+				<div class="mb-4 flex flex-col space-y-2 px-4 font-semibold">
+					<button class="flex cursor-not-allowed items-center space-x-2 rounded-md px-3 py-2 hover:bg-[#f0f4f8]">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="#636b74"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="icon icon-tabler icons-tabler-outline icon-tabler-bell-ringing"
+						>
+							<path
+								stroke="none"
+								d="M0 0h24v24H0z"
+								fill="none"
+							/>
+							<path d="M10 5a2 2 0 0 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" />
+							<path d="M9 17v1a3 3 0 0 0 6 0v-1" />
+							<path d="M21 6.727a11.05 11.05 0 0 0 -2.794 -3.727" />
+							<path d="M3 6.727a11.05 11.05 0 0 1 2.792 -3.727" />
+						</svg>
+						<span>Notifikasi</span>
+					</button>
+					<button class="flex cursor-not-allowed items-center space-x-2 rounded-md px-3 py-2 hover:bg-[#f0f4f8]">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="#636b74"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="icon icon-tabler icons-tabler-outline icon-tabler-lifebuoy"
+						>
+							<path
+								stroke="none"
+								d="M0 0h24v24H0z"
+								fill="none"
+							/>
+							<path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
+							<path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+							<path d="M15 15l3.35 3.35" />
+							<path d="M9 15l-3.35 3.35" />
+							<path d="M5.65 5.65l3.35 3.35" />
+							<path d="M18.35 5.65l-3.35 3.35" />
+						</svg>
+						<span>Bantuan</span>
+					</button>
+					<button class="flex cursor-not-allowed items-center space-x-2 rounded-md px-3 py-2 hover:bg-[#f0f4f8]">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="#636b74"
+							class="icon icon-tabler icons-tabler-filled icon-tabler-settings"
+						>
+							<path
+								stroke="none"
+								d="M0 0h24v24H0z"
+								fill="none"
+							/>
+							<path d="M14.647 4.081a.724 .724 0 0 0 1.08 .448c2.439 -1.485 5.23 1.305 3.745 3.744a.724 .724 0 0 0 .447 1.08c2.775 .673 2.775 4.62 0 5.294a.724 .724 0 0 0 -.448 1.08c1.485 2.439 -1.305 5.23 -3.744 3.745a.724 .724 0 0 0 -1.08 .447c-.673 2.775 -4.62 2.775 -5.294 0a.724 .724 0 0 0 -1.08 -.448c-2.439 1.485 -5.23 -1.305 -3.745 -3.744a.724 .724 0 0 0 -.447 -1.08c-2.775 -.673 -2.775 -4.62 0 -5.294a.724 .724 0 0 0 .448 -1.08c-1.485 -2.439 1.305 -5.23 3.744 -3.745a.722 .722 0 0 0 1.08 -.447c.673 -2.775 4.62 -2.775 5.294 0zm-2.647 4.919a3 3 0 1 0 0 6a3 3 0 0 0 0 -6z" />
+						</svg>
+						<span>Pengaturan</span>
+					</button>
+				</div>
+
+				<!-- Divider Line -->
+				<div class="w-full px-4">
+					<div class="h-px w-full rounded-full bg-gray-300"></div>
+				</div>
+
+				<!-- Profile Section -->
+				<div class="profilebox flex cursor-pointer select-none py-4 pl-4 hover:bg-[#f0f4f8] active:bg-[#dde7ee]">
+					<div class="flex items-center space-x-2">
+						<div class="relative flex h-9 w-9 items-center justify-center rounded-full bg-gray-500">
+							<div class="absolute -left-1 -top-1 flex h-4 w-4 items-center justify-center rounded bg-[#0b6bcb] text-white">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="12"
+									height="12"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="icon icon-tabler icons-tabler-outline icon-tabler-switch-horizontal"
+								>
+									<path
+										stroke="none"
+										d="M0 0h24v24H0z"
+										fill="none"
+									/>
+									<path d="M16 3l4 4l-4 4" />
+									<path d="M10 7l10 0" />
+									<path d="M8 13l-4 4l4 4" />
+									<path d="M4 17l9 0" />
+								</svg>
+							</div>
+							<img
+								src="/images/pfp.jpg"
+								alt="PFP"
+								width="36"
+								height="36"
+								class="rounded-full"
+							/>
+						</div>
+						<div class="flex flex-col">
+							<p class="font-semibold">Daffa A. (Jawa Barat)</p>
+							<p class="text-gray-600">daffa.jabar@nusantap.id</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Main Content -->
+		<div class="ml-60 flex flex-1 flex-col space-y-6 overflow-auto px-10 py-8">
+			<div class="flex w-full flex-row items-center justify-between">
+				<p class="text-lg font-semibold text-[#636b74]">Selamat datang, Admin <span class="font-bold text-[#0b6bcb]">Jawa Barat</span> 👋🏻</p>
+			</div>
+
+			<div class="flex w-full flex-row items-center justify-between">
+				<p class="text-3xl font-bold">Peta Prevalensi Stunting Jawa Barat</p>
+			</div>
+
+			<div
+				class="tableauPlaceholder"
+				id="viz1731384725437"
+				style="position: relative; height: 100%; width: 100%"
+			>
+				<object
+					class="tableauViz"
+					style="display: none"
+				>
+					<param
+						name="host_url"
+						value="https%3A%2F%2Fpublic.tableau.com%2F"
+					/>
+					<param
+						name="embed_code_version"
+						value="3"
+					/>
+					<param
+						name="path"
+						value="shared/GZH392NW7"
+					/>
+					<param
+						name="toolbar"
+						value="no"
+					/>
+					<param
+						name="static_image"
+						value="https://public.tableau.com/static/images/GZ/GZH392NW7/1.png"
+					/>
+					<param
+						name="animate_transition"
+						value="yes"
+					/>
+					<param
+						name="display_static_image"
+						value="yes"
+					/>
+					<param
+						name="display_spinner"
+						value="yes"
+					/>
+					<param
+						name="display_overlay"
+						value="yes"
+					/>
+					<param
+						name="display_count"
+						value="yes"
+					/>
+					<param
+						name="language"
+						value="en-US"
+					/>
+				</object>
+			</div>
+		</div>
+
+		<!-- Tableau JavaScript API -->
+		<script type="text/javascript">
+			var divElement = document.getElementById('viz1731384725437');
+			var vizElement = divElement.getElementsByTagName('object')[0];
+			vizElement.style.width = '100%';
+			vizElement.style.height = divElement.offsetWidth * 0.75 + 'px';
+			var scriptElement = document.createElement('script');
+			scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+			vizElement.parentNode.insertBefore(scriptElement, vizElement);
+
+			const profilebox = document.querySelector('.profilebox');
+			profilebox.addEventListener('click', () => {
+				const alertDiv = document.createElement('div');
+				alertDiv.classList.add('absolute', 'bottom-[5.5rem]', 'left-4', 'flex', 'items-center', 'justify-center', 'bg-red-500', 'text-white', 'font-semibold', 'py-2', 'px-2', 'rounded-lg', 'z-[200]', 'mr-4');
+				alertDiv.innerHTML = '<p>Harap mengganti profil di page menu lain! (misal: di "/" atau "/generate-menu")</p>';
+				profilebox.appendChild(alertDiv);
+
+				// Remove the alertDiv after 2 seconds
+				setTimeout(() => {
+					alertDiv.remove();
+				}, 2000);
+			});
+		</script>
+	</body>
+</html>
