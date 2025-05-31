@@ -1,0 +1,135 @@
+SATUGIZI - MOBILE LAYOUT DOCUMENTATION
+=====================================
+
+OVERVIEW:
+SatuGizi adalah aplikasi web dengan mobile-first design yang menampilkan interface mobile bahkan di desktop (dengan margin di sisi kiri-kanan).
+
+LAYOUT STRUCTURE:
+=================
+
+1. MOBILE CONTAINER
+   - Max width: 430px (standar mobile)
+   - Aspect ratio: 9:16
+   - Centered di desktop dengan margin auto
+   - Box shadow dan border untuk simulasi mobile di desktop
+
+2. PUBLIC APP LAYOUT (/public/*)
+   ================================
+   
+   HEADER (60px height):
+   - Logo "SatuGizi" di kiri
+   - Badge "Masyarakat" di kanan
+   - Sticky positioning
+   - Border bottom untuk pemisah
+   
+   MAIN CONTENT (flex-1):
+   - Scrollable content area
+   - Padding 16px
+   - Flexible height mengisi ruang tersisa
+   
+   BOTTOM NAVIGATION (80px height):
+   - 4 tab navigation:
+     * Scan (/public) - Icon kamera/scan
+     * Nutrisi (/public/nutrition) - Icon chart
+     * Edukasi (/public/education) - Icon book
+     * Laporan (/public/report) - Icon document
+   - Sticky positioning di bottom
+   - Border top untuk pemisah
+
+3. GOVERNMENT DASHBOARD (/gov/*)
+   ===============================
+   
+   HEADER (64px height):
+   - Logo "SatuGizi Dashboard" di kiri
+   - Badge "Pemerintah" 
+   - Navigation menu horizontal:
+     * Menu Planner (/gov)
+     * Vendor Analysis (/gov/vendors)
+     * Data Stunting (/gov/stunting)
+   
+   MAIN CONTENT:
+   - Full width desktop layout
+   - Max width 7xl dengan padding
+   - Tidak menggunakan mobile container
+
+RESPONSIVE BEHAVIOR:
+===================
+
+MOBILE (< 768px):
+- Full width mobile container
+- Native mobile experience
+- Safe area padding untuk notch/home indicator
+
+DESKTOP (>= 768px):
+- Mobile container dengan max-width 430px
+- Centered dengan margin auto
+- Background abu-abu untuk area di luar container
+- Box shadow untuk efek elevated mobile app
+
+CSS CLASSES:
+============
+
+.mobile-container - Container utama untuk mobile view
+.mobile-header - Header dengan sticky positioning
+.mobile-content - Content area yang scrollable
+.mobile-bottom-nav - Bottom navigation bar
+.mobile-safe-area - Padding untuk safe area (notch, dll)
+
+FITUR UTAMA APLIKASI MASYARAKAT:
+================================
+
+1. CV SCAN FEATURES:
+   - On-Device Spoilage & Contaminant Detection
+   - Analisis Nutrisi makanan real-time
+   
+2. EDUCATION:
+   - Edukasi anak tentang manfaat gizi
+   - Interactive learning modules
+   
+3. REPORTING:
+   - Report AKG (Angka Kecukupan Gizi) terpenuhi
+   - Personal nutrition tracking
+
+FITUR UTAMA DASHBOARD PEMERINTAH:
+=================================
+
+1. CONSTRAINT-DRIVEN MENU TUNER:
+   - Slider anggaran per porsi
+   - Target makronutrien (karbo/protein/lemak %)
+   - Keterbatasan logistik (jarak distribusi)
+   - Ketersediaan musiman (satelit/forecast)
+   
+2. MONTHLY MENU PLANNING:
+   - Generate 1 menu per hari untuk seluruh bulan
+   - Real-time rendering saat parameter berubah
+   - Highlight selisih antar skenario
+   
+3. VENDOR ANALYSIS:
+   - Clustering AI untuk vendor kredibel
+   - Analisis risiko berdasarkan jarak, harga, riwayat
+   - Sertifikat keamanan pangan dan feedback lapangan
+   
+4. STUNTING DATA:
+   - Real-time analysis data stunting
+   - Regional insights dan trends
+
+DESIGN PRINCIPLES:
+==================
+
+1. Mobile-first approach
+2. Clean, minimal interface
+3. Easy navigation dengan bottom tabs
+4. Consistent spacing (16px padding)
+5. Accessible color contrast
+6. Touch-friendly button sizes (min 44px)
+7. Fast loading dengan optimized assets
+
+TECHNICAL NOTES:
+================
+
+- Next.js App Router structure
+- Tailwind CSS untuk styling
+- TypeScript untuk type safety
+- Responsive design dengan CSS Grid/Flexbox
+- PWA capabilities untuk mobile installation
+- Optimized untuk performance di mobile devices 
