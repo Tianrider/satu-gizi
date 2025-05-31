@@ -3,6 +3,24 @@
 import { useState } from 'react';
 import Marquee from 'react-fast-marquee';
 import Image from 'next/image';
+import {
+  IconChefHat,
+  IconCurrencyDollar,
+  IconApple,
+  IconMeat,
+  IconDroplet,
+  IconMapPin,
+  IconCloud,
+  IconSun,
+  IconCalendar,
+  IconSparkles,
+  IconCoin,
+  IconFlame,
+  IconUsers,
+  IconShield,
+  IconTrendingUp,
+  IconAdjustments,
+} from '@tabler/icons-react';
 // import { sendHelloRequest } from './azure-openai';
 import { generateMonthlyMenu } from './menu-generator';
 
@@ -151,9 +169,11 @@ export default function MenuPlannerPage() {
   return (
     <div className='space-y-8'>
       <div className='rounded-lg p-8 flex flex-col justify-center items-center w-full'>
-        <h1 className='text-4xl font-bold text-gray-900 mb-4 text-center'>
-          Menu Planner
-        </h1>
+        <div className='flex items-center gap-4 mb-4'>
+          <h1 className='text-4xl font-bold text-gray-900 text-center'>
+            Menu Planner
+          </h1>
+        </div>
         <div
           className='w-[12rem] h-3 mb-6'
           style={{ background: 'linear-gradient(to right, #02B5AC, #D2DD25)' }}
@@ -185,15 +205,27 @@ export default function MenuPlannerPage() {
       </div>
 
       <div className='bg-white rounded-lg shadow-lg p-8'>
-        <h2 className='text-2xl font-semibold text-gray-900 mb-6'>
-          Parameter Kontrol
-        </h2>
+        <div className='flex items-center gap-3 mb-6'>
+          <IconAdjustments
+            size={32}
+            className='text-primary'
+          />
+          <h2 className='text-2xl font-semibold text-gray-900'>
+            Parameter Kontrol
+          </h2>
+        </div>
 
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
           <div className='space-y-4'>
-            <label className='block text-lg font-medium text-gray-700'>
-              Anggaran per Porsi
-            </label>
+            <div className='flex items-center gap-2'>
+              <IconCurrencyDollar
+                size={24}
+                className='text-green-600'
+              />
+              <label className='block text-lg font-medium text-gray-700'>
+                Anggaran per Porsi
+              </label>
+            </div>
             <div className='flex items-center space-x-6'>
               <span className='text-base text-gray-600 font-medium'>
                 Rp 5,000
@@ -205,7 +237,14 @@ export default function MenuPlannerPage() {
                 step='1000'
                 value={budget}
                 onChange={(e) => setBudget(Number(e.target.value))}
-                className='flex-1 h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer'
+                className='flex-1 h-6 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-primary'
+                style={{
+                  background: `linear-gradient(to right, #02B5AC 0%, #02B5AC ${
+                    ((budget - 5000) / (25000 - 5000)) * 100
+                  }%, #e5e7eb ${
+                    ((budget - 5000) / (25000 - 5000)) * 100
+                  }%, #e5e7eb 100%)`,
+                }}
               />
               <span className='text-base text-gray-600 font-medium'>
                 Rp 25,000
@@ -219,13 +258,25 @@ export default function MenuPlannerPage() {
           </div>
 
           <div className='space-y-4'>
-            <label className='block text-lg font-medium text-gray-700'>
-              Target Makronutrien (% per hari)
-            </label>
+            <div className='flex items-center gap-2'>
+              <IconApple
+                size={24}
+                className='text-orange-600'
+              />
+              <label className='block text-lg font-medium text-gray-700'>
+                Target Makronutrien (% per hari)
+              </label>
+            </div>
             <div className='space-y-4'>
               <div>
                 <div className='flex justify-between items-center mb-2'>
-                  <span className='text-base font-medium'>Karbohidrat</span>
+                  <div className='flex items-center gap-2'>
+                    <IconApple
+                      size={18}
+                      className='text-yellow-600'
+                    />
+                    <span className='text-base font-medium'>Karbohidrat</span>
+                  </div>
                   <span className='text-base font-semibold text-primary'>
                     {carbs}%
                   </span>
@@ -236,13 +287,26 @@ export default function MenuPlannerPage() {
                   max='65'
                   value={carbs}
                   onChange={(e) => setCarbs(Number(e.target.value))}
-                  className='w-full h-3 bg-gray-200 rounded-lg'
+                  className='w-full h-6 bg-gray-200 rounded-lg appearance-none cursor-pointer'
+                  style={{
+                    background: `linear-gradient(to right, #d97706 0%, #d97706 ${
+                      ((carbs - 45) / (65 - 45)) * 100
+                    }%, #e5e7eb ${
+                      ((carbs - 45) / (65 - 45)) * 100
+                    }%, #e5e7eb 100%)`,
+                  }}
                 />
               </div>
 
               <div>
                 <div className='flex justify-between items-center mb-2'>
-                  <span className='text-base font-medium'>Protein</span>
+                  <div className='flex items-center gap-2'>
+                    <IconMeat
+                      size={18}
+                      className='text-red-600'
+                    />
+                    <span className='text-base font-medium'>Protein</span>
+                  </div>
                   <span className='text-base font-semibold text-primary'>
                     {protein}%
                   </span>
@@ -253,13 +317,26 @@ export default function MenuPlannerPage() {
                   max='30'
                   value={protein}
                   onChange={(e) => setProtein(Number(e.target.value))}
-                  className='w-full h-3 bg-gray-200 rounded-lg'
+                  className='w-full h-6 bg-gray-200 rounded-lg appearance-none cursor-pointer'
+                  style={{
+                    background: `linear-gradient(to right, #dc2626 0%, #dc2626 ${
+                      ((protein - 15) / (30 - 15)) * 100
+                    }%, #e5e7eb ${
+                      ((protein - 15) / (30 - 15)) * 100
+                    }%, #e5e7eb 100%)`,
+                  }}
                 />
               </div>
 
               <div>
                 <div className='flex justify-between items-center mb-2'>
-                  <span className='text-base font-medium'>Lemak</span>
+                  <div className='flex items-center gap-2'>
+                    <IconDroplet
+                      size={18}
+                      className='text-blue-600'
+                    />
+                    <span className='text-base font-medium'>Lemak</span>
+                  </div>
                   <span className='text-base font-semibold text-primary'>
                     {fat}%
                   </span>
@@ -270,16 +347,29 @@ export default function MenuPlannerPage() {
                   max='35'
                   value={fat}
                   onChange={(e) => setFat(Number(e.target.value))}
-                  className='w-full h-3 bg-gray-200 rounded-lg'
+                  className='w-full h-6 bg-gray-200 rounded-lg appearance-none cursor-pointer'
+                  style={{
+                    background: `linear-gradient(to right, #2563eb 0%, #2563eb ${
+                      ((fat - 20) / (35 - 20)) * 100
+                    }%, #e5e7eb ${
+                      ((fat - 20) / (35 - 20)) * 100
+                    }%, #e5e7eb 100%)`,
+                  }}
                 />
               </div>
             </div>
           </div>
 
           <div className='space-y-4'>
-            <label className='block text-lg font-medium text-gray-700'>
-              Jarak Distribusi Maksimal
-            </label>
+            <div className='flex items-center gap-2'>
+              <IconMapPin
+                size={24}
+                className='text-purple-600'
+              />
+              <label className='block text-lg font-medium text-gray-700'>
+                Jarak Distribusi Maksimal
+              </label>
+            </div>
             <div className='flex items-center space-x-6'>
               <span className='text-base text-gray-600 font-medium'>10 km</span>
               <input
@@ -289,7 +379,14 @@ export default function MenuPlannerPage() {
                 step='5'
                 value={distance}
                 onChange={(e) => setDistance(Number(e.target.value))}
-                className='flex-1 h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer'
+                className='flex-1 h-6 bg-gray-200 rounded-lg appearance-none cursor-pointer'
+                style={{
+                  background: `linear-gradient(to right, #7c3aed 0%, #7c3aed ${
+                    ((distance - 10) / (100 - 10)) * 100
+                  }%, #e5e7eb ${
+                    ((distance - 10) / (100 - 10)) * 100
+                  }%, #e5e7eb 100%)`,
+                }}
               />
               <span className='text-base text-gray-600 font-medium'>
                 100 km
@@ -303,9 +400,15 @@ export default function MenuPlannerPage() {
           </div>
 
           <div className='space-y-4'>
-            <label className='block text-lg font-medium text-gray-700'>
-              Ketersediaan Musiman
-            </label>
+            <div className='flex items-center gap-2'>
+              <IconCloud
+                size={24}
+                className='text-blue-600'
+              />
+              <label className='block text-lg font-medium text-gray-700'>
+                Ketersediaan Musiman
+              </label>
+            </div>
             <select
               value={season}
               onChange={(e) => setSeason(e.target.value)}
@@ -324,6 +427,10 @@ export default function MenuPlannerPage() {
         <div className='mt-8 flex justify-between items-center'>
           <div className='flex items-center space-x-8 bg-gradient-to-r from-primary/5 to-secondary/5 p-4 rounded-lg border border-gray-200'>
             <div className='flex items-center space-x-3'>
+              <IconMapPin
+                size={20}
+                className='text-primary'
+              />
               <label className='text-lg font-semibold text-gray-800'>
                 Province:
               </label>
@@ -343,6 +450,10 @@ export default function MenuPlannerPage() {
               </select>
             </div>
             <div className='flex items-center space-x-3'>
+              <IconCalendar
+                size={20}
+                className='text-secondary'
+              />
               <label className='text-lg font-semibold text-gray-800'>
                 Bulan:
               </label>
@@ -365,8 +476,9 @@ export default function MenuPlannerPage() {
           <button
             onClick={generateMenu}
             disabled={isGenerating}
-            className='bg-primary text-white px-8 py-4 text-lg font-semibold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+            className='bg-primary text-white px-8 py-4 text-lg font-semibold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3'
           >
+            <IconSparkles size={24} />
             {isGenerating ? 'Generating...' : 'Generate Menu Bulanan'}
           </button>
         </div>
@@ -429,9 +541,15 @@ export default function MenuPlannerPage() {
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
         <div className='bg-primary rounded-lg shadow-lg p-8 text-center'>
-          <h3 className='text-lg font-medium text-white mb-2'>
-            Total Anggaran Bulanan
-          </h3>
+          <div className='flex items-center justify-center gap-2 mb-2'>
+            <IconCoin
+              size={24}
+              className='text-white'
+            />
+            <h3 className='text-lg font-medium text-white'>
+              Total Anggaran Bulanan
+            </h3>
+          </div>
           <p className='text-4xl font-bold text-white mb-2'>
             Rp {formatCurrency(totalBudget)}
           </p>
@@ -439,21 +557,27 @@ export default function MenuPlannerPage() {
         </div>
 
         <div className='bg-third rounded-lg shadow-lg p-8 text-center'>
-          <h3 className='text-lg font-medium text-white mb-2'>
-            Rata-rata Kalori
-          </h3>
+          <div className='flex items-center justify-center gap-2 mb-2'>
+            <IconFlame
+              size={24}
+              className='text-white'
+            />
+            <h3 className='text-lg font-medium text-white'>Rata-rata Kalori</h3>
+          </div>
           <p className='text-4xl font-bold text-white mb-2'>
             {formatCurrency(averageCalories)} kcal
           </p>
-          <p className='text-base text-white'>
-            Sesuai AKG anak usia 7-9 tahun
-          </p>
+          <p className='text-base text-white'>Sesuai AKG anak usia 7-9 tahun</p>
         </div>
 
         <div className='bg-secondary rounded-lg shadow-lg p-8 text-center'>
-          <h3 className='text-lg font-medium text-white mb-2'>
-            Vendor Terlibat
-          </h3>
+          <div className='flex items-center justify-center gap-2 mb-2'>
+            <IconUsers
+              size={24}
+              className='text-white'
+            />
+            <h3 className='text-lg font-medium text-white'>Vendor Terlibat</h3>
+          </div>
           <p className='text-4xl font-bold text-white mb-2'>
             {vendorCount} vendor
           </p>
