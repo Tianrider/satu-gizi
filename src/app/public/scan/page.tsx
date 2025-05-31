@@ -1,7 +1,8 @@
 "use client";
-
 import {useEffect, useRef, useState} from "react";
 import {InferenceEngine} from "inferencejs";
+import {useRouter} from "next/navigation";
+import {ArrowLeft} from "lucide-react";
 
 interface DetectionResult {
 	x?: number;
@@ -21,6 +22,7 @@ interface DetectionResult {
 }
 
 export default function ScanPage() {
+	const router = useRouter();
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const isScanningRef = useRef(false);
@@ -32,9 +34,11 @@ export default function ScanPage() {
 		null
 	);
 	const [error, setError] = useState<string | null>(null);
+	const [cameraStarted, setCameraStarted] = useState(false);
 
 	useEffect(() => {
 		initializeModel();
+		// Keep manual camera activation
 	}, []);
 
 	const initializeModel = async () => {
@@ -62,21 +66,78 @@ export default function ScanPage() {
 
 	const startCamera = async () => {
 		try {
+			console.log("Requesting camera access...");
+
+			if (
+				!navigator.mediaDevices ||
+				!navigator.mediaDevices.getUserMedia
+			) {
+				throw new Error("Camera not supported in this browser");
+			}
+
 			const stream = await navigator.mediaDevices.getUserMedia({
 				video: {
-					facingMode: "environment", // Use back camera on mobile
-					width: {ideal: 640},
-					height: {ideal: 480},
+					facingMode: "environment",
+					width: {ideal: 1280, min: 640},
+					height: {ideal: 720, min: 480},
 				},
 			});
 
-			if (videoRef.current) {
-				videoRef.current.srcObject = stream;
-				videoRef.current.play();
-			}
+			console.log("Camera stream obtained:", stream);
+
+			// Set camera started first to make video element visible
+			setCameraStarted(true);
+
+			// Use setTimeout to ensure state update and re-render happens
+			setTimeout(() => {
+				console.log("videoRef.current", videoRef.current);
+				if (videoRef.current) {
+					videoRef.current.srcObject = stream;
+					console.log("Stream assigned to video element");
+
+					// Try to play the video
+					videoRef.current
+						.play()
+						.then(() => {
+							console.log("Video playing successfully");
+							// Automatically start scanning after camera is ready
+							setTimeout(() => {
+								if (workerId && inferEngine) {
+									console.log("Auto-starting scanning...");
+									isScanningRef.current = true;
+									setIsScanning(true);
+									detectFrame();
+								}
+							}, 500);
+						})
+						.catch((playError) => {
+							console.log(
+								"Video play failed, but continuing:",
+								playError
+							);
+							// Even if play fails, try to start scanning
+							setTimeout(() => {
+								if (workerId && inferEngine) {
+									console.log(
+										"Auto-starting scanning (after play failed)..."
+									);
+									isScanningRef.current = true;
+									setIsScanning(true);
+									detectFrame();
+								}
+							}, 500);
+						});
+				} else {
+					console.error("Video ref still null after state update");
+				}
+			}, 100); // Small delay to allow re-render
 		} catch (err) {
 			console.error("Error accessing camera:", err);
-			setError("Failed to access camera");
+			setError(
+				`Camera access failed: ${
+					err instanceof Error ? err.message : "Unknown error"
+				}`
+			);
 		}
 	};
 
@@ -85,6 +146,11 @@ export default function ScanPage() {
 			const stream = videoRef.current.srcObject as MediaStream;
 			stream.getTracks().forEach((track) => track.stop());
 			videoRef.current.srcObject = null;
+			setCameraStarted(false);
+			// Also stop scanning when camera is stopped
+			isScanningRef.current = false;
+			setIsScanning(false);
+			setPredictions([]);
 		}
 	};
 
@@ -124,46 +190,6 @@ export default function ScanPage() {
 		}
 	};
 
-	const startScanning = async () => {
-		if (!workerId || !inferEngine || !videoRef.current) {
-			console.log("Cannot start scanning - missing requirements");
-			return;
-		}
-
-		console.log("Starting scanning...");
-		isScanningRef.current = true;
-		setIsScanning(true);
-
-		await startCamera();
-
-		// Wait a bit for camera to initialize, then start detection
-		setTimeout(() => {
-			console.log("Starting detection loop...");
-			detectFrame();
-		}, 500);
-	};
-
-	const stopScanning = () => {
-		console.log("Stopping scanning...");
-		isScanningRef.current = false;
-		setIsScanning(false);
-		stopCamera();
-		setPredictions([]);
-
-		// Clear canvas
-		if (canvasRef.current) {
-			const ctx = canvasRef.current.getContext("2d");
-			if (ctx) {
-				ctx.clearRect(
-					0,
-					0,
-					canvasRef.current.width,
-					canvasRef.current.height
-				);
-			}
-		}
-	};
-
 	const drawPredictions = (predictions: DetectionResult[]) => {
 		if (!canvasRef.current || !videoRef.current) return;
 
@@ -188,9 +214,6 @@ export default function ScanPage() {
 			const y = bbox.y || prediction.y || 0;
 			const width = bbox.width || prediction.width || 0;
 			const height = bbox.height || prediction.height || 0;
-			const className =
-				prediction.class || prediction.className || "Unknown";
-			const confidence = prediction.confidence || 0;
 
 			if (!x || !y || !width || !height) return; // Skip invalid predictions
 
@@ -296,221 +319,195 @@ export default function ScanPage() {
 
 	if (error) {
 		return (
-			<div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-				<div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-					<svg
-						className="w-8 h-8 text-red-600"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
+			<div className="min-h-screen bg-black flex flex-col items-center justify-center text-white">
+				<div className="text-center">
+					<div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+						<svg
+							className="w-8 h-8"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+							/>
+						</svg>
+					</div>
+					<h3 className="text-lg font-semibold mb-2">Camera Error</h3>
+					<p className="text-sm text-gray-300 mb-4">{error}</p>
+					<button
+						onClick={() => window.location.reload()}
+						className="bg-primary text-white px-6 py-2 rounded-lg font-medium"
 					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth={2}
-							d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-						/>
-					</svg>
+						Retry
+					</button>
 				</div>
-				<h3 className="text-lg font-semibold text-gray-900">Error</h3>
-				<p className="text-sm text-gray-600 text-center">{error}</p>
-				<button
-					onClick={() => window.location.reload()}
-					className="bg-primary text-white px-6 py-2 rounded-lg font-medium"
-				>
-					Retry
-				</button>
 			</div>
 		);
 	}
 
+	// Debug logging
+	console.log("State check:", {isLoading, cameraStarted, workerId});
+
 	return (
-		<div className="space-y-6 pb-4">
-			{/* Header */}
-			<div className="text-center py-4">
-				<h1 className="text-2xl font-bold text-gray-900 mb-2">
-					Food Detection Scanner
-				</h1>
-				<p className="text-gray-600 text-sm">
-					Arahkan kamera ke makanan untuk deteksi otomatis
-				</p>
-			</div>
-
-			{/* Camera View */}
-			<div className="bg-white rounded-xl p-4 border border-gray-100">
-				<div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden">
-					{isLoading ? (
-						<div className="absolute inset-0 flex items-center justify-center">
-							<div className="text-center text-white">
-								<div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-								<p className="text-sm">Loading AI Model...</p>
-							</div>
-						</div>
-					) : (
-						<>
-							<video
-								ref={videoRef}
-								className="w-full h-full object-cover"
-								playsInline
-								muted
-							/>
-							<canvas
-								ref={canvasRef}
-								className="absolute inset-0 w-full h-full"
-								style={{pointerEvents: "none"}}
-							/>
-							{!isScanning && (
-								<div className="absolute inset-0 flex items-center justify-center bg-black/50">
-									<div className="text-center text-white">
-										<div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-											<svg
-												className="w-8 h-8"
-												fill="none"
-												stroke="currentColor"
-												viewBox="0 0 24 24"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth={2}
-													d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-												/>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth={2}
-													d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-												/>
-											</svg>
-										</div>
-										<p className="text-sm">
-											Tap to start scanning
-										</p>
-									</div>
-								</div>
-							)}
-						</>
-					)}
-				</div>
-
-				{/* Controls */}
-				<div className="flex justify-center mt-4 space-x-4">
-					{!isScanning ? (
+		<div className="min-h-screen absolute bg-black w-full h-full top-o left-0 overflow-hidden">
+			<>
+				{/* Header */}
+				<div className="absolute top-0 left-0 right-0 z-20 h-14 items-center flex px-4 bg-white">
+					<div className="flex items-center">
 						<button
-							onClick={startScanning}
-							disabled={isLoading}
-							className="bg-primary text-white px-8 py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+							onClick={() => router.back()}
+							className="flex items-center space-x-2 text-primary font-bold"
 						>
-							<svg
-								className="w-5 h-5"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9 5a9 9 0 1118 0 9 9 0 01-18 0z"
-								/>
-							</svg>
-							<span>Mulai Scan</span>
+							<ArrowLeft size={20} />
+							<span className="font-bold">Home</span>
 						</button>
-					) : (
-						<button
-							onClick={stopScanning}
-							className="bg-red-600 text-white px-8 py-3 rounded-lg font-medium flex items-center space-x-2"
-						>
-							<svg
-								className="w-5 h-5"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-								/>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M9 10h6v4H9z"
-								/>
-							</svg>
-							<span>Stop Scan</span>
-						</button>
-					)}
-				</div>
-			</div>
-
-			{/* Live Detection Status */}
-			{isScanning && (
-				<div className="bg-gradient-to-r from-third/10 to-primary/10 rounded-xl p-4 border border-third/20">
-					<div className="flex items-center space-x-3">
-						<div className="w-3 h-3 bg-third rounded-full animate-pulse"></div>
-						<div className="flex-1">
-							<h3 className="text-sm font-semibold text-gray-900">
-								Live Food Detection Active
-							</h3>
-							<p className="text-xs text-gray-600">
-								{predictions.length > 0
-									? `Detecting ${
-											predictions.length
-									  } food item${
-											predictions.length > 1 ? "s" : ""
-									  }`
-									: "Scanning for food items..."}
-							</p>
-						</div>
-						<div className="text-right">
-							<div className="text-lg font-bold text-third">
-								{predictions.length}
-							</div>
-							<div className="text-xs text-gray-600">
-								detected
-							</div>
-						</div>
 					</div>
 				</div>
-			)}
 
-			{/* Simplified Results - just count */}
-			{predictions.length > 0 && (
-				<div className="bg-white rounded-xl p-4 border border-gray-100">
-					<h3 className="text-lg font-semibold text-gray-900 mb-4">
-						Food Detection Results
-					</h3>
-					<div className="text-center py-4">
-						<div className="text-3xl font-bold text-primary mb-2">
-							{predictions.length}
+				{/* Tab Navigation */}
+				<div className="absolute top-16 left-4 right-4 z-20">
+					<div className="flex bg-white/20 backdrop-blur-sm rounded-xl p-1">
+						<button className="flex-1 bg-primary text-white py-3 px-4 rounded-lg text-sm font-medium flex items-center justify-center space-x-2">
+							<svg
+								className="w-5 h-5"
+								fill="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+								<path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+							</svg>
+							<span>Scan Makanan</span>
+						</button>
+						<button className="flex-1 text-white py-3 px-4 rounded-lg text-sm font-medium flex items-center justify-center space-x-2">
+							<svg
+								className="w-5 h-5"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+								/>
+							</svg>
+							<span>Cek Stunting</span>
+						</button>
+					</div>
+				</div>
+			</>
+			{/* Show Turn on Camera Button when model is loaded but camera not started */}
+			{!isLoading && !cameraStarted ? (
+				<div className="absolute inset-0 flex items-center justify-center h-full bg-black">
+					<div className="text-center text-white">
+						<div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+							<svg
+								className="w-8 h-8"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+								/>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+								/>
+							</svg>
 						</div>
-						<p className="text-gray-600">
-							Food item{predictions.length > 1 ? "s" : ""}{" "}
-							detected
+						<h3 className="text-lg font-semibold mb-2">
+							Ready to Scan
+						</h3>
+						<p className="text-sm text-gray-300 mb-6">
+							AI Model loaded successfully
 						</p>
+						<button
+							onClick={(e) => {
+								e.preventDefault();
+								e.stopPropagation();
+								console.log("Button clicked!");
+								startCamera();
+							}}
+							className="bg-primary text-white px-8 py-3 rounded-lg font-medium flex items-center space-x-2 mx-auto relative z-10 cursor-pointer hover:bg-primary/90 transition-colors"
+							style={{pointerEvents: "auto"}}
+						>
+							<svg
+								className="w-5 h-5"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+								/>
+							</svg>
+							<span>Turn On Camera</span>
+						</button>
 					</div>
 				</div>
-			)}
+			) : (
+				<>
+					{/* Full Screen Camera */}
+					<div className="absolute inset-0 w-full h-full">
+						{/* Always render video element for ref access */}
+						<video
+							ref={videoRef}
+							className={`w-full h-full object-cover ${
+								cameraStarted ? "block" : "hidden"
+							}`}
+							playsInline
+							autoPlay
+							muted
+							style={{display: cameraStarted ? "block" : "none"}}
+						/>
+						{isLoading ? (
+							<div className="flex items-center justify-center h-full bg-black">
+								<div className="text-center text-white">
+									<div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+									<p className="text-sm">
+										Loading AI Model...
+									</p>
+								</div>
+							</div>
+						) : (
+							<>
+								<canvas
+									ref={canvasRef}
+									className={`absolute inset-0 w-full h-full ${
+										cameraStarted ? "block" : "hidden"
+									}`}
+									style={{pointerEvents: "none"}}
+								/>
+							</>
+						)}
+					</div>
 
-			{/* Instructions */}
-			<div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
-				<h3 className="text-sm font-semibold text-blue-900 mb-2">
-					Tips Food Detection:
-				</h3>
-				<ul className="text-xs text-blue-800 space-y-1">
-					<li>• Pastikan pencahayaan cukup terang</li>
-					<li>• Arahkan kamera langsung ke makanan</li>
-					<li>• Jaga jarak 20-30 cm dari makanan</li>
-					<li>• Hindari gerakan yang terlalu cepat</li>
-					<li>
-						• Bounding box akan muncul otomatis saat makanan
-						terdeteksi
-					</li>
-				</ul>
-			</div>
+					{/* Instruction Text - only show when camera is active */}
+					{cameraStarted && (
+						<div className="absolute top-36 left-4 right-4 z-20">
+							<div className="text-center text-white">
+								<p className="text-sm bg-black/40 backdrop-blur-sm rounded-lg px-4 py-3 leading-relaxed">
+									AI sedang memindai makanan secara otomatis
+								</p>
+							</div>
+						</div>
+					)}
+				</>
+			)}
 		</div>
 	);
 }

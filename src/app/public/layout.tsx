@@ -1,5 +1,4 @@
 import type {Metadata} from "next";
-import Navbar from "../shared/navbar";
 
 export const metadata: Metadata = {
 	title: "SatuGizi - Aplikasi Masyarakat",
@@ -29,8 +28,6 @@ export default function PublicLayout({children}: {children: React.ReactNode}) {
 				<main className="mobile-content flex-1 z-2 mb-32">
 					{children}
 				</main>
-
-				<Navbar />
 			</div>
 		</div>
 	);

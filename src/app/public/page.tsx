@@ -8,6 +8,7 @@ import Link from "next/link";
 import "swiper/css";
 import "swiper/css/pagination";
 import {User} from "lucide-react";
+import Navbar from "../shared/navbar";
 
 export default function PublicHome() {
 	return (
@@ -348,6 +349,8 @@ export default function PublicHome() {
 					</div>
 				</div>
 			</div>
+
+			<Navbar />
 		</div>
 	);
 }
