@@ -9,7 +9,7 @@ export default function Home() {
 				{/* Logo and Title */}
 				<div className="text-center mb-12">
 					<div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg p-3">
-						<Image
+						<img
 							src="/logo.png"
 							alt="SatuGizi Logo"
 							className="w-full h-full object-contain"
