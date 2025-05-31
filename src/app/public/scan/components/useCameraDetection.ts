@@ -45,9 +45,9 @@ export const useCameraDetection = () => {
 
 			// Initialize the model
 			const id = await engine.startWorker(
-				"plane-meal-gkxko",
-				"3",
-				"rf_rik26UMGykbgfVzjMYYEaxHLCdK2"
+				"plane-meal-gkxko-iqkzp",
+				"2",
+				"rf_dPxNJC0rbBQ0q1sNaZmm1x5swyp1"
 			);
 			setWorkerId(id);
 			setIsLoading(false);
@@ -124,90 +124,68 @@ export const useCameraDetection = () => {
 			const boxY = y - height / 2;
 
 			// Draw main bounding box
-			ctx.strokeStyle = prediction.color || "#d50b8b";
+			if (prediction.class === "bread") {
+				ctx.strokeStyle = "#FF0000";
+			} else {
+				ctx.strokeStyle = "#00FF00";
+			}
+
 			ctx.lineWidth = 4;
 			ctx.setLineDash([]);
 			ctx.strokeRect(boxX, boxY, width, height);
 
-			// Draw corner guides for better visibility
-			const cornerLength = 20;
-			ctx.strokeStyle = "#02b5ac";
-			ctx.lineWidth = 3;
+			// // Draw corner guides for better visibility
+			// const cornerLength = 20;
+			// ctx.strokeStyle = "#02b5ac";
+			// ctx.lineWidth = 3;
 
-			// Top-left corner
-			ctx.beginPath();
-			ctx.moveTo(boxX, boxY + cornerLength);
-			ctx.lineTo(boxX, boxY);
-			ctx.lineTo(boxX + cornerLength, boxY);
-			ctx.stroke();
+			// // Top-left corner
+			// ctx.beginPath();
+			// ctx.moveTo(boxX, boxY + cornerLength);
+			// ctx.lineTo(boxX, boxY);
+			// ctx.lineTo(boxX + cornerLength, boxY);
+			// ctx.stroke();
 
-			// Top-right corner
-			ctx.beginPath();
-			ctx.moveTo(boxX + width - cornerLength, boxY);
-			ctx.lineTo(boxX + width, boxY);
-			ctx.lineTo(boxX + width, boxY + cornerLength);
-			ctx.stroke();
+			// // Top-right corner
+			// ctx.beginPath();
+			// ctx.moveTo(boxX + width - cornerLength, boxY);
+			// ctx.lineTo(boxX + width, boxY);
+			// ctx.lineTo(boxX + width, boxY + cornerLength);
+			// ctx.stroke();
 
-			// Bottom-left corner
-			ctx.beginPath();
-			ctx.moveTo(boxX, boxY + height - cornerLength);
-			ctx.lineTo(boxX, boxY + height);
-			ctx.lineTo(boxX + cornerLength, boxY + height);
-			ctx.stroke();
+			// // Bottom-left corner
+			// ctx.beginPath();
+			// ctx.moveTo(boxX, boxY + height - cornerLength);
+			// ctx.lineTo(boxX, boxY + height);
+			// ctx.lineTo(boxX + cornerLength, boxY + height);
+			// ctx.stroke();
 
-			// Bottom-right corner
-			ctx.beginPath();
-			ctx.moveTo(boxX + width - cornerLength, boxY + height);
-			ctx.lineTo(boxX + width, boxY + height);
-			ctx.lineTo(boxX + width, boxY + height - cornerLength);
-			ctx.stroke();
+			// // Bottom-right corner
+			// ctx.beginPath();
+			// ctx.moveTo(boxX + width - cornerLength, boxY + height);
+			// ctx.lineTo(boxX + width, boxY + height);
+			// ctx.lineTo(boxX + width, boxY + height - cornerLength);
+			// ctx.stroke();
 
-			// Draw center crosshair
-			ctx.strokeStyle = "#d2dd25";
-			ctx.lineWidth = 2;
-			ctx.setLineDash([5, 5]);
+			// // Draw center crosshair
+			// ctx.strokeStyle = "#d2dd25";
+			// ctx.lineWidth = 2;
+			// ctx.setLineDash([5, 5]);
 
-			// Horizontal line
-			ctx.beginPath();
-			ctx.moveTo(x - 15, y);
-			ctx.lineTo(x + 15, y);
-			ctx.stroke();
+			// // Horizontal line
+			// ctx.beginPath();
+			// ctx.moveTo(x - 15, y);
+			// ctx.lineTo(x + 15, y);
+			// ctx.stroke();
 
-			// Vertical line
-			ctx.beginPath();
-			ctx.moveTo(x, y - 15);
-			ctx.lineTo(x, y + 15);
-			ctx.stroke();
+			// // Vertical line
+			// ctx.beginPath();
+			// ctx.moveTo(x, y - 15);
+			// ctx.lineTo(x, y + 15);
+			// ctx.stroke();
 
 			// Reset line dash
 			ctx.setLineDash([]);
-
-			// Draw simple "Food" label without confidence
-			const labelText = "Food";
-			const labelPadding = 6;
-			const labelHeight = 24;
-
-			// Measure text width
-			ctx.font = "bold 12px sans-serif";
-			const textWidth = ctx.measureText(labelText).width;
-			const labelWidth = textWidth + labelPadding * 2;
-
-			// Position label above the box, or below if not enough space
-			const labelY =
-				boxY > labelHeight + 5 ? boxY - 5 : boxY + height + labelHeight;
-
-			// Draw label background
-			ctx.fillStyle = prediction.color || "#d50b8b";
-			ctx.fillRect(boxX, labelY - labelHeight, labelWidth, labelHeight);
-
-			// Draw label text
-			ctx.fillStyle = "#ffffff";
-			ctx.textBaseline = "middle";
-			ctx.fillText(
-				labelText,
-				boxX + labelPadding,
-				labelY - labelHeight / 2
-			);
 		});
 	};
 

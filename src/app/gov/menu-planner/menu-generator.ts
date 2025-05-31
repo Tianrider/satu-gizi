@@ -1,35 +1,35 @@
-import OpenAI from 'openai';
+import OpenAI from "openai";
 
 const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true,
+	apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+	dangerouslyAllowBrowser: true,
 });
 
 interface MenuGenerationParams {
-  budget: number;
-  carbs: number;
-  protein: number;
-  fat: number;
-  distance: number;
-  season: string;
-  month: string;
-  province: string;
+	budget: number;
+	carbs: number;
+	protein: number;
+	fat: number;
+	distance: number;
+	season: string;
+	month: string;
+	province: string;
 }
 
 interface DailyMenu {
-  date: number;
-  menu_name: string;
-  price_per_portion: number;
+	date: number;
+	menu_name: string;
+	price_per_portion: number;
 }
 
 interface MonthlySummary {
-  total_monthly_budget: number;
-  average_daily_calories: number;
+	total_monthly_budget: number;
+	average_daily_calories: number;
 }
 
-interface MenuResponse {
-  daily_menus: DailyMenu[];
-  monthly_summary: MonthlySummary;
+export interface MenuResponse {
+	daily_menus: DailyMenu[];
+	monthly_summary: MonthlySummary;
 }
 
 const SYSTEM_PROMPT = `You are an AI assistant specialized in generating monthly food menus for Indonesia's "Makan Bergizi Gratis" (Free Nutritious Meals) program under President Prabowo's administration. Your task is to create nutritionally balanced, culturally appropriate, and budget-conscious meal plans for school children aged 7-9 years. Here are the details:
@@ -64,24 +64,24 @@ The output should provide practical menu planning data: daily menus with realist
 The language of the output *SHOULD* be Indonesian. Also, remember to follow the menu name format.`;
 
 export async function generateMonthlyMenu(
-  params: MenuGenerationParams
+	params: MenuGenerationParams
 ): Promise<MenuResponse> {
-  const { budget, carbs, protein, fat, distance, season, month, province } =
-    params;
+	const {budget, carbs, protein, fat, distance, season, month, province} =
+		params;
 
-  const daysInMonth = new Date(2025, getMonthNumber(month), 0).getDate();
+	const daysInMonth = new Date(2025, getMonthNumber(month), 0).getDate();
 
-  const seasonText =
-    season === 'hujan'
-      ? 'Musim Hujan (Nov - Mar)'
-      : season === 'kemarau'
-      ? 'Musim Kemarau (Apr - Oct)'
-      : 'Sepanjang Tahun';
+	const seasonText =
+		season === "hujan"
+			? "Musim Hujan (Nov - Mar)"
+			: season === "kemarau"
+			? "Musim Kemarau (Apr - Oct)"
+			: "Sepanjang Tahun";
 
-  const userPrompt = `Generate a monthly menu plan for the Makan Bergizi Gratis program with the following parameters:
+	const userPrompt = `Generate a monthly menu plan for the Makan Bergizi Gratis program with the following parameters:
 
 **Budget & Nutrition:**
-- Budget per portion: Rp ${budget.toLocaleString('id-ID')}
+- Budget per portion: Rp ${budget.toLocaleString("id-ID")}
 - Target macronutrients per day:
   - Carbohydrates: ${carbs}%
   - Protein: ${protein}%
@@ -103,166 +103,175 @@ Focus on traditional Indonesian dishes that are practical for school meal progra
 
 Remember to use Indonesian language for the menu names.`;
 
-  try {
-    const response = await openai.responses.create({
-      model: 'gpt-4.1',
-      input: [
-        {
-          role: 'system',
-          content: [
-            {
-              type: 'input_text',
-              text: SYSTEM_PROMPT,
-            },
-          ],
-        },
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'input_text',
-              text: userPrompt,
-            },
-          ],
-        },
-      ],
-      text: {
-        format: {
-          type: 'json_schema',
-          name: 'monthly_menu_preview',
-          strict: true,
-          schema: {
-            type: 'object',
-            properties: {
-              daily_menus: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    date: {
-                      type: 'number',
-                    },
-                    menu_name: {
-                      type: 'string',
-                    },
-                    price_per_portion: {
-                      type: 'number',
-                    },
-                  },
-                  required: ['date', 'menu_name', 'price_per_portion'],
-                  additionalProperties: false,
-                },
-              },
-              monthly_summary: {
-                type: 'object',
-                properties: {
-                  total_monthly_budget: {
-                    type: 'number',
-                  },
-                  average_daily_calories: {
-                    type: 'number',
-                  },
-                },
-                required: ['total_monthly_budget', 'average_daily_calories'],
-                additionalProperties: false,
-              },
-            },
-            required: ['daily_menus', 'monthly_summary'],
-            additionalProperties: false,
-          },
-        },
-      },
-      reasoning: {},
-      tools: [
-        {
-          type: 'web_search_preview',
-          user_location: {
-            type: 'approximate',
-            country: 'ID',
-            city: getMainCityFromProvince(province),
-            region: getRegionFromProvince(province),
-          },
-          search_context_size: 'high',
-        },
-      ],
-      temperature: 1,
-      max_output_tokens: 32768,
-      top_p: 1,
-      store: true,
-    });
+	try {
+		const response = await openai.responses.create({
+			model: "gpt-4.1",
+			input: [
+				{
+					role: "system",
+					content: [
+						{
+							type: "input_text",
+							text: SYSTEM_PROMPT,
+						},
+					],
+				},
+				{
+					role: "user",
+					content: [
+						{
+							type: "input_text",
+							text: userPrompt,
+						},
+					],
+				},
+			],
+			text: {
+				format: {
+					type: "json_schema",
+					name: "monthly_menu_preview",
+					strict: true,
+					schema: {
+						type: "object",
+						properties: {
+							daily_menus: {
+								type: "array",
+								items: {
+									type: "object",
+									properties: {
+										date: {
+											type: "number",
+										},
+										menu_name: {
+											type: "string",
+										},
+										price_per_portion: {
+											type: "number",
+										},
+									},
+									required: [
+										"date",
+										"menu_name",
+										"price_per_portion",
+									],
+									additionalProperties: false,
+								},
+							},
+							monthly_summary: {
+								type: "object",
+								properties: {
+									total_monthly_budget: {
+										type: "number",
+									},
+									average_daily_calories: {
+										type: "number",
+									},
+								},
+								required: [
+									"total_monthly_budget",
+									"average_daily_calories",
+								],
+								additionalProperties: false,
+							},
+						},
+						required: ["daily_menus", "monthly_summary"],
+						additionalProperties: false,
+					},
+				},
+			},
+			reasoning: {},
+			tools: [
+				{
+					type: "web_search_preview",
+					user_location: {
+						type: "approximate",
+						country: "ID",
+						city: getMainCityFromProvince(province),
+						region: getRegionFromProvince(province),
+					},
+					search_context_size: "high",
+				},
+			],
+			temperature: 1,
+			max_output_tokens: 32768,
+			top_p: 1,
+			store: true,
+		});
 
-    try {
-      const output = response.output?.[0] as any;
-      if (output?.content?.[0]?.text) {
-        return JSON.parse(output.content[0].text) as MenuResponse;
-      }
-    } catch (parseError) {
-      console.error('Error parsing response:', parseError);
-    }
+		try {
+			const output = response.output?.[0] as unknown as {
+				content: {text: string}[];
+			};
+			if (output?.content?.[0]?.text) {
+				return JSON.parse(output.content[0].text) as MenuResponse;
+			}
+		} catch (parseError) {
+			console.error("Error parsing response:", parseError);
+		}
 
-    throw new Error('Invalid response format from OpenAI');
-  } catch (error) {
-    console.error('Error generating menu:', error);
-    throw new Error(
-      `Failed to generate menu: ${
-        error instanceof Error ? error.message : 'Unknown error'
-      }`
-    );
-  }
+		throw new Error("Invalid response format from OpenAI");
+	} catch (error) {
+		console.error("Error generating menu:", error);
+		throw new Error(
+			`Failed to generate menu: ${
+				error instanceof Error ? error.message : "Unknown error"
+			}`
+		);
+	}
 }
 
 function getMonthNumber(monthName: string): number {
-  const months = [
-    'Januari',
-    'Februari',
-    'Maret',
-    'April',
-    'Mei',
-    'Juni',
-    'Juli',
-    'Agustus',
-    'September',
-    'Oktober',
-    'November',
-    'Desember',
-  ];
-  return months.indexOf(monthName);
+	const months = [
+		"Januari",
+		"Februari",
+		"Maret",
+		"April",
+		"Mei",
+		"Juni",
+		"Juli",
+		"Agustus",
+		"September",
+		"Oktober",
+		"November",
+		"Desember",
+	];
+	return months.indexOf(monthName);
 }
 
 function getRegionFromProvince(province: string): string {
-  const regionMap: Record<string, string> = {
-    'DKI Jakarta': 'Jakarta',
-    'Jawa Barat': 'West Java',
-    'Jawa Tengah': 'Central Java',
-    'Jawa Timur': 'East Java',
-    'DI Yogyakarta': 'Yogyakarta',
-    Banten: 'Banten',
-    'Sumatera Utara': 'North Sumatra',
-    'Sumatera Barat': 'West Sumatra',
-    'Sumatera Selatan': 'South Sumatra',
-    Bali: 'Bali',
-    'Kalimantan Timur': 'East Kalimantan',
-    'Sulawesi Selatan': 'South Sulawesi',
-    Papua: 'Papua',
-  };
-  return regionMap[province] || province;
+	const regionMap: Record<string, string> = {
+		"DKI Jakarta": "Jakarta",
+		"Jawa Barat": "West Java",
+		"Jawa Tengah": "Central Java",
+		"Jawa Timur": "East Java",
+		"DI Yogyakarta": "Yogyakarta",
+		Banten: "Banten",
+		"Sumatera Utara": "North Sumatra",
+		"Sumatera Barat": "West Sumatra",
+		"Sumatera Selatan": "South Sumatra",
+		Bali: "Bali",
+		"Kalimantan Timur": "East Kalimantan",
+		"Sulawesi Selatan": "South Sulawesi",
+		Papua: "Papua",
+	};
+	return regionMap[province] || province;
 }
 
 function getMainCityFromProvince(province: string): string {
-  const cityMap: Record<string, string> = {
-    'DKI Jakarta': 'Jakarta',
-    'Jawa Barat': 'Bandung',
-    'Jawa Tengah': 'Semarang',
-    'Jawa Timur': 'Surabaya',
-    'DI Yogyakarta': 'Yogyakarta',
-    Banten: 'Serang',
-    'Sumatera Utara': 'Medan',
-    'Sumatera Barat': 'Padang',
-    'Sumatera Selatan': 'Palembang',
-    Bali: 'Denpasar',
-    'Kalimantan Timur': 'Samarinda',
-    'Sulawesi Selatan': 'Makassar',
-    Papua: 'Jayapura',
-  };
-  return cityMap[province] || 'Jakarta';
+	const cityMap: Record<string, string> = {
+		"DKI Jakarta": "Jakarta",
+		"Jawa Barat": "Bandung",
+		"Jawa Tengah": "Semarang",
+		"Jawa Timur": "Surabaya",
+		"DI Yogyakarta": "Yogyakarta",
+		Banten: "Serang",
+		"Sumatera Utara": "Medan",
+		"Sumatera Barat": "Padang",
+		"Sumatera Selatan": "Palembang",
+		Bali: "Denpasar",
+		"Kalimantan Timur": "Samarinda",
+		"Sulawesi Selatan": "Makassar",
+		Papua: "Jayapura",
+	};
+	return cityMap[province] || "Jakarta";
 }

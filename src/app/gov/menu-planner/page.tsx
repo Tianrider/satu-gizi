@@ -18,7 +18,7 @@ import {
 	IconAdjustments,
 } from "@tabler/icons-react";
 // import { sendHelloRequest } from './azure-openai';
-import {generateMonthlyMenu} from "./menu-generator";
+import {generateMonthlyMenu, MenuResponse} from "./menu-generator";
 
 export default function MenuPlannerPage() {
 	const [budget, setBudget] = useState(12000);
@@ -30,9 +30,7 @@ export default function MenuPlannerPage() {
 	const [currentMonth, setCurrentMonth] = useState("Januari");
 	const [currentProvince, setCurrentProvince] = useState("Jawa Barat");
 	const [isGenerating, setIsGenerating] = useState(false);
-	const [testResponse, setTestResponse] = useState("");
-	const [isTesting, setIsTesting] = useState(false);
-	const [generatedMenus, setGeneratedMenus] = useState<any>(null);
+	const [generatedMenus, setGeneratedMenus] = useState<MenuResponse>();
 	const [generateError, setGenerateError] = useState<string>("");
 
 	const months = [
@@ -121,7 +119,7 @@ export default function MenuPlannerPage() {
 	const getMenuForDate = (date: number) => {
 		if (generatedMenus?.daily_menus) {
 			const menu = generatedMenus.daily_menus.find(
-				(m: any) => m.date === date
+				(m: {date: number; menu_name?: string}) => m.date === date
 			);
 			return menu?.menu_name || "Menu tidak tersedia";
 		}
@@ -139,7 +137,8 @@ export default function MenuPlannerPage() {
 	const getPriceForDate = (date: number) => {
 		if (generatedMenus?.daily_menus) {
 			const menu = generatedMenus.daily_menus.find(
-				(m: any) => m.date === date
+				(m: {date: number; price_per_portion?: number}) =>
+					m.date === date
 			);
 			return menu?.price_per_portion || budget;
 		}

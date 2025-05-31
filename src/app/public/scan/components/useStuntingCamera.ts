@@ -182,7 +182,7 @@ export const useStuntingCamera = () => {
 			console.log("Poses detected, turning off loading");
 			setIsLoading(false);
 		}
-	}, [poses, cameraStarted, videoReady, isLoading]);
+	}, [poses, cameraStarted, videoReady, isLoading, videoElementForPoseNet]);
 
 	// Add a fallback timeout to turn off loading after 5 seconds
 	useEffect(() => {

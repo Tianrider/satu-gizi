@@ -2,14 +2,7 @@
 import {useEffect, useRef, useState} from "react";
 import {usePoseNet} from "@/utils/posenet/use-posenet";
 import {draw, predict} from "@/utils/posenet/use-canvas";
-import {
-	Camera,
-	CameraOff,
-	Pause,
-	Play,
-	CheckCircle,
-	RotateCcw,
-} from "lucide-react";
+import {Camera, CameraOff, Pause, Play, RotateCcw} from "lucide-react";
 import cn from "classnames";
 import {
 	sendImageChatCompletion,
@@ -474,22 +467,7 @@ Output your answer in this JSON format:
 
 				{/* Freeze overlay */}
 				{isFrozen && (
-					<div className="absolute inset-0 flex flex-col items-center justify-center z-30">
-						<div className="flex flex-col items-center mb-6">
-							<div className="bg-white bg-opacity-90 rounded-full p-4 shadow-lg mb-4">
-								<CheckCircle className="h-16 w-16 text-green-600" />
-							</div>
-							<div className="text-3xl md:text-4xl font-extrabold text-green-700 drop-shadow mb-2 tracking-tight">
-								Frame Captured!
-							</div>
-							<div className="text-base md:text-lg text-gray-100 font-medium mb-2 text-center">
-								Your pose has been successfully captured.
-								<br />
-								{aiResult
-									? "Review and confirm the predicted data below."
-									: "You can retake or continue."}
-							</div>
-						</div>
+					<div className="absolute inset-0 flex flex-col items-center justify-end bottom-24 z-30">
 						{aiResult && editFields ? (
 							<form className="bg-white bg-opacity-90 rounded-lg shadow-lg px-6 py-6 flex flex-col gap-4 w-full max-w-xs items-center">
 								<div className="w-full">
@@ -527,15 +505,6 @@ Output your answer in this JSON format:
 										onChange={handleEditChange}
 										className="w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
 									/>
-								</div>
-								<div className="w-full text-sm text-gray-600 mt-2">
-									Confidence:{" "}
-									<span className="font-bold">
-										{aiResult.confidence}
-									</span>
-								</div>
-								<div className="w-full text-xs text-gray-500 italic">
-									{aiResult.notes}
 								</div>
 								<button
 									type="button"
@@ -636,58 +605,6 @@ Output your answer in this JSON format:
 						</>
 					)}
 				</div>
-
-				{/* Prediction Display */}
-				{webcamEnabled && !isLoading && (
-					<div
-						className={cn(
-							"mt-4 mx-4 bg-opacity-90 text-white px-4 py-3 rounded-lg text-center",
-							isPaused
-								? "bg-red-900"
-								: prediction.isFullyVisible &&
-								  prediction.isStanding
-								? "bg-green-700"
-								: prediction.isFullyVisible &&
-								  !prediction.isStanding
-								? "bg-yellow-700"
-								: "bg-red-700"
-						)}
-					>
-						{isPaused ? (
-							<div className="text-lg font-bold">PAUSED</div>
-						) : (
-							<>
-								<div className="text-lg font-bold">
-									{prediction.message}
-								</div>
-								<div className="text-sm mt-1">
-									Detection:{" "}
-									{Math.round(prediction.probability * 100)}%
-								</div>
-								{!prediction.isFullyVisible &&
-									prediction.missingParts.length > 0 && (
-										<div className="text-xs mt-1 text-red-200">
-											⚠️ Make sure your entire body is
-											visible
-										</div>
-									)}
-								{prediction.isFullyVisible &&
-									!prediction.isStanding && (
-										<div className="text-xs mt-1 text-yellow-200">
-											⚠️ Stand up straight for accurate
-											measurement
-										</div>
-									)}
-								{prediction.isFullyVisible &&
-									prediction.isStanding && (
-										<div className="text-xs mt-1 text-green-200">
-											✅ Ready for stunting measurement
-										</div>
-									)}
-							</>
-						)}
-					</div>
-				)}
 			</div>
 		</div>
 	);
