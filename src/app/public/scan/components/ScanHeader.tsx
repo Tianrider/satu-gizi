@@ -1,13 +1,30 @@
 import {ArrowLeft} from "lucide-react";
-import {useRouter} from "next/navigation";
+import {useRouter, usePathname} from "next/navigation";
 
 interface ScanHeaderProps {
-	activeTab: "scan" | "stunting";
-	onTabChange: (tab: "scan" | "stunting") => void;
+	activeTab?: "scan" | "stunting";
+	onTabChange?: (tab: "scan" | "stunting") => void;
 }
 
 export const ScanHeader = ({activeTab, onTabChange}: ScanHeaderProps) => {
 	const router = useRouter();
+	const pathname = usePathname();
+
+	// Determine active tab from pathname if not provided
+	const currentActiveTab =
+		activeTab || (pathname.includes("/stunting") ? "stunting" : "scan");
+
+	const handleTabChange = (tab: "scan" | "stunting") => {
+		if (onTabChange) {
+			// Use callback for backward compatibility
+			onTabChange(tab);
+		} else {
+			// Use router navigation for new routing structure
+			const path =
+				tab === "scan" ? "/public/scan/food" : "/public/scan/stunting";
+			router.push(path);
+		}
+	};
 
 	return (
 		<>
@@ -28,9 +45,9 @@ export const ScanHeader = ({activeTab, onTabChange}: ScanHeaderProps) => {
 			<div className="absolute top-16 left-4 right-4 z-20">
 				<div className="flex bg-white/20 backdrop-blur-sm rounded-xl p-1">
 					<button
-						onClick={() => onTabChange("scan")}
+						onClick={() => handleTabChange("scan")}
 						className={`flex-1 py-3 px-4 rounded-lg text-sm font-medium flex items-center justify-center space-x-2 transition-colors ${
-							activeTab === "scan"
+							currentActiveTab === "scan"
 								? "bg-primary text-white"
 								: "text-white hover:bg-white/10"
 						}`}
@@ -46,9 +63,9 @@ export const ScanHeader = ({activeTab, onTabChange}: ScanHeaderProps) => {
 						<span>Scan Makanan</span>
 					</button>
 					<button
-						onClick={() => onTabChange("stunting")}
+						onClick={() => handleTabChange("stunting")}
 						className={`flex-1 py-3 px-4 rounded-lg text-sm font-medium flex items-center justify-center space-x-2 transition-colors ${
-							activeTab === "stunting"
+							currentActiveTab === "stunting"
 								? "bg-primary text-white"
 								: "text-white hover:bg-white/10"
 						}`}

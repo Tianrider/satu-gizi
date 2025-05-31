@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Marquee from 'react-fast-marquee';
 import Image from 'next/image';
-import { sendHelloRequest } from './azure-openai';
+import { sendHelloRequest } from '../../../utils/azure-openai';
 
 export default function MenuPlannerPage() {
   const [budget, setBudget] = useState(12000);

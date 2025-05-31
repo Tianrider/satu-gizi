@@ -12,6 +12,8 @@
 		"@supabase/ssr": "^0.6.1",
 		"@supabase/supabase-js": "^2.49.4",
 		"@tailwindcss/line-clamp": "^0.4.4",
+		"@tensorflow-models/posenet": "^2.2.2",
+		"classnames": "^2.5.1",
 		"inferencejs": "^1.0.21",
 		"lucide-react": "^0.511.0",
 		"next": "15.3.1",
