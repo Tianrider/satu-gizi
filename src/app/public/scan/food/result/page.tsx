@@ -35,7 +35,7 @@ export default function FoodResultPage() {
           <div className='relative rounded-lg shadow-lg overflow-hidden h-48'>
             <Image
               src='/food-image/food-image-1.jpg'
-              alt='Nasi Ayam Kecap'
+              alt='Nasi Ayam Goreng Sayur'
               fill
               className='object-cover'
             />
@@ -51,7 +51,9 @@ export default function FoodResultPage() {
 
           {/* Food Details */}
           <div className='bg-white rounded-b-lg -mt-2 shadow-lg p-4'>
-            <h3 className='text-xl font-bold text-gray-800'>Nasi Ayam Kecap</h3>
+            <h3 className='text-xl font-bold text-gray-800'>
+              Nasi Ayam Goreng Sayur
+            </h3>
             <div className='text-sm text-gray-600'>
               <p>
                 Nasi: 300 gr, Ayam (dada): 150 gr, Buncis: 50 gr, Wortel: 100
