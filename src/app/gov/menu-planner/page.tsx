@@ -13,6 +13,7 @@ export default function MenuPlannerPage() {
   const [distance, setDistance] = useState(50);
   const [season, setSeason] = useState('hujan');
   const [currentMonth, setCurrentMonth] = useState('Januari');
+  const [currentProvince, setCurrentProvince] = useState('Jawa Barat');
   const [isGenerating, setIsGenerating] = useState(false);
   const [testResponse, setTestResponse] = useState('');
   const [isTesting, setIsTesting] = useState(false);
@@ -30,6 +31,44 @@ export default function MenuPlannerPage() {
     'Oktober',
     'November',
     'Desember',
+  ];
+
+  const provinces = [
+    'Aceh',
+    'Sumatera Utara',
+    'Sumatera Barat',
+    'Riau',
+    'Jambi',
+    'Sumatera Selatan',
+    'Bengkulu',
+    'Lampung',
+    'DKI Jakarta',
+    'Jawa Barat',
+    'Jawa Tengah',
+    'DI Yogyakarta',
+    'Jawa Timur',
+    'Banten',
+    'Bali',
+    'Nusa Tenggara Barat',
+    'Nusa Tenggara Timur',
+    'Kalimantan Barat',
+    'Kalimantan Tengah',
+    'Kalimantan Selatan',
+    'Kalimantan Timur',
+    'Kalimantan Utara',
+    'Sulawesi Utara',
+    'Sulawesi Tengah',
+    'Sulawesi Selatan',
+    'Sulawesi Tenggara',
+    'Gorontalo',
+    'Sulawesi Barat',
+    'Maluku',
+    'Maluku Utara',
+    'Papua',
+    'Papua Barat',
+    'Papua Selatan',
+    'Papua Tengah',
+    'Papua Pegunungan',
   ];
 
   const foodImages = Array.from(
@@ -77,6 +116,10 @@ export default function MenuPlannerPage() {
 
   const totalBudget = budget * 31;
   const averageCalories = Math.floor(1800 + (budget - 5000) / 100);
+
+  const formatCurrency = (amount: number) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
 
   return (
     <div className='space-y-8'>
@@ -166,7 +209,7 @@ export default function MenuPlannerPage() {
             </div>
             <div className='text-center bg-primary/10 p-3 rounded-lg'>
               <span className='text-2xl font-bold text-primary'>
-                Rp {budget.toLocaleString()}
+                Rp {formatCurrency(budget)}
               </span>
             </div>
           </div>
@@ -275,22 +318,45 @@ export default function MenuPlannerPage() {
         </div>
 
         <div className='mt-8 flex justify-between items-center'>
-          <div className='flex items-center space-x-4'>
-            <label className='text-lg font-medium text-gray-700'>Bulan:</label>
-            <select
-              value={currentMonth}
-              onChange={(e) => setCurrentMonth(e.target.value)}
-              className='p-3 text-base border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary'
-            >
-              {months.map((month) => (
-                <option
-                  key={month}
-                  value={month}
-                >
-                  {month}
-                </option>
-              ))}
-            </select>
+          <div className='flex items-center space-x-8 bg-gradient-to-r from-primary/5 to-secondary/5 p-4 rounded-lg border border-gray-200'>
+            <div className='flex items-center space-x-3'>
+              <label className='text-lg font-semibold text-gray-800'>
+                Province:
+              </label>
+              <select
+                value={currentProvince}
+                onChange={(e) => setCurrentProvince(e.target.value)}
+                className='p-3 text-base border-2 border-primary/30 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-white shadow-sm font-medium'
+              >
+                {provinces.map((province) => (
+                  <option
+                    key={province}
+                    value={province}
+                  >
+                    {province}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className='flex items-center space-x-3'>
+              <label className='text-lg font-semibold text-gray-800'>
+                Bulan:
+              </label>
+              <select
+                value={currentMonth}
+                onChange={(e) => setCurrentMonth(e.target.value)}
+                className='p-3 text-base border-2 border-secondary/30 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary bg-white shadow-sm font-medium'
+              >
+                {months.map((month) => (
+                  <option
+                    key={month}
+                    value={month}
+                  >
+                    {month}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
           <button
             onClick={generateMenu}
@@ -327,7 +393,7 @@ export default function MenuPlannerPage() {
                 {getMenuForDate(date)}
               </div>
               <div className='bg-red-600 text-white px-3 py-1 rounded-md text-base font-bold text-center'>
-                Rp {getPriceForDate(date).toLocaleString()}
+                Rp {formatCurrency(getPriceForDate(date))}
               </div>
             </div>
           ))}
@@ -340,7 +406,7 @@ export default function MenuPlannerPage() {
             Total Anggaran Bulanan
           </h3>
           <p className='text-4xl font-bold text-primary mb-2'>
-            Rp {totalBudget.toLocaleString()}
+            Rp {formatCurrency(totalBudget)}
           </p>
           <p className='text-base text-gray-600'>Per anak per bulan</p>
         </div>
@@ -350,7 +416,7 @@ export default function MenuPlannerPage() {
             Rata-rata Kalori
           </h3>
           <p className='text-4xl font-bold text-third mb-2'>
-            {averageCalories.toLocaleString()} kcal
+            {formatCurrency(averageCalories)} kcal
           </p>
           <p className='text-base text-gray-600'>
             Sesuai AKG anak usia 7-9 tahun
