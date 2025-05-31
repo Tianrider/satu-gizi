@@ -1,6 +1,5 @@
 import {drawKeypoints, drawSkeleton} from "./use-helper";
 import * as posenet from "@tensorflow-models/posenet";
-import {multiPoseDetection} from "./use-posenet";
 
 export const videoWidth = 700;
 export const videoHeight = 500;
@@ -14,51 +13,131 @@ export const average = (array: number[]) => {
 };
 
 export function predict(poses: posenet.Pose[]) {
-	const maxPose: posenet.Pose = poses.reduce(
-		(a, b) => (a.score > b.score ? a : b),
-		{
-			score: 0,
-		} as posenet.Pose
+	if (!poses || poses.length === 0) {
+		return {
+			message: "No person detected",
+			probability: 0,
+			isFullyVisible: false,
+			missingParts: ["entire body"],
+			isStanding: false,
+		};
+	}
+
+	// Get the highest confidence pose
+	const bestPose = poses.reduce((best, current) =>
+		current.score > best.score ? current : best
 	);
 
-	if (maxPose.score === 0) {
-		return {message: "-", probability: 1};
-	} else {
-		const rightShoulder = maxPose.keypoints.filter(
-			(k) => k.part === "rightShoulder"
-		)[0];
-		const rightElbow = maxPose.keypoints.filter(
-			(k) => k.part === "rightElbow"
-		)[0];
-		// const rightWrist = maxPose.keypoints.filter(
-		// 	(k) => k.part === "rightWrist"
-		// )[0];
-
-		const leftKnee = maxPose.keypoints.filter(
-			(k) => k.part === "leftKnee"
-		)[0];
-		const rightKnee = maxPose.keypoints.filter(
-			(k) => k.part === "rightKnee"
-		)[0];
-
-		const leftHip = maxPose.keypoints.filter(
-			(k) => k.part === "leftHip"
-		)[0];
-		const rightHip = maxPose.keypoints.filter(
-			(k) => k.part === "rightHip"
-		)[0];
-
-		return "hi";
-		// }
-
-		// return {message: "-", probability: rightShoulder.score};
+	if (bestPose.score < 0.3) {
+		return {
+			message: "Person detection confidence too low",
+			probability: bestPose.score,
+			isFullyVisible: false,
+			missingParts: ["clear detection"],
+			isStanding: false,
+		};
 	}
+
+	const keypoints = bestPose.keypoints;
+	const requiredParts = [
+		"nose",
+		"leftEye",
+		"rightEye", // Head
+		"leftShoulder",
+		"rightShoulder", // Upper body
+		"leftElbow",
+		"rightElbow",
+		"leftWrist",
+		"rightWrist",
+		"leftHip",
+		"rightHip", // Lower body
+		"leftKnee",
+		"rightKnee",
+		"leftAnkle",
+		"rightAnkle",
+	];
+
+	const missingParts: string[] = [];
+	const visibleParts: Record<string, posenet.Keypoint> = {};
+
+	// Check which parts are visible with good confidence
+	requiredParts.forEach((part) => {
+		const keypoint = keypoints.find(
+			(kp: posenet.Keypoint) => kp.part === part
+		);
+		if (!keypoint || keypoint.score < 0.5) {
+			missingParts.push(part);
+		} else {
+			visibleParts[part] = keypoint;
+		}
+	});
+
+	// Check if person is standing (knees should be relatively straight)
+	let isStanding = false;
+	if (
+		visibleParts.leftHip &&
+		visibleParts.leftKnee &&
+		visibleParts.leftAnkle &&
+		visibleParts.rightHip &&
+		visibleParts.rightKnee &&
+		visibleParts.rightAnkle
+	) {
+		// Calculate leg angles to determine if standing
+		const leftLegStraight =
+			Math.abs(
+				visibleParts.leftHip.position.y -
+					visibleParts.leftKnee.position.y
+			) >
+			Math.abs(
+				visibleParts.leftKnee.position.y -
+					visibleParts.leftAnkle.position.y
+			);
+		const rightLegStraight =
+			Math.abs(
+				visibleParts.rightHip.position.y -
+					visibleParts.rightKnee.position.y
+			) >
+			Math.abs(
+				visibleParts.rightKnee.position.y -
+					visibleParts.rightAnkle.position.y
+			);
+
+		isStanding = leftLegStraight && rightLegStraight;
+	}
+
+	const isFullyVisible = missingParts.length === 0;
+
+	// Generate message based on analysis
+	let message = "";
+	if (!isFullyVisible) {
+		if (missingParts.length > 6) {
+			message = "Move closer to camera";
+		} else {
+			message = `Missing: ${missingParts.slice(0, 3).join(", ")}${
+				missingParts.length > 3 ? "..." : ""
+			}`;
+		}
+	} else if (!isStanding) {
+		message = "Please stand up straight";
+	} else {
+		message = "Perfect! Ready for measurement";
+	}
+
+	return {
+		message,
+		probability: bestPose.score,
+		isFullyVisible,
+		missingParts,
+		isStanding,
+	};
 }
 
 export function draw(
 	canvas: HTMLCanvasElement | null,
 	video: HTMLVideoElement | null,
-	poses: posenet.Pose[]
+	poses: posenet.Pose[],
+	width: number,
+	height: number
 ) {
 	if (canvas === null || video === null) {
 		return;
@@ -69,38 +148,15 @@ export function draw(
 	}
 	ctx.save();
 	ctx.scale(-1, 1);
-	ctx.translate(-videoWidth, 0);
-	ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
+	ctx.translate(-width, 0);
+	ctx.drawImage(video, 0, 0, width, height);
 	ctx.restore();
 
 	poses.forEach(({score, keypoints}) => {
-		if (score >= multiPoseDetection.minPoseConfidence) {
-			drawKeypoints(keypoints, multiPoseDetection.minPartConfidence, ctx);
-			drawSkeleton(keypoints, multiPoseDetection.minPartConfidence, ctx);
+		if (score >= 0.6) {
+			drawKeypoints(keypoints, 0.1, ctx);
+			drawSkeleton(keypoints, 0.1, ctx);
 			//drawBoundingBox(keypoints, ctx);
 		}
 	});
-}
-
-export function getFormattedDuration(startTime: Date, finishTime: Date) {
-	const timeDifference = finishTime.getTime() - startTime.getTime();
-
-	const minutes = Math.floor(timeDifference / 60000); // 1 minute = 60000 milliseconds
-	const seconds = Math.floor((timeDifference % 60000) / 1000); // 1 second = 1000 milliseconds
-
-	// Format the result as MM:ss
-	const formattedTime = `${String(minutes).padStart(2, "0")}:${String(
-		seconds
-	).padStart(2, "0")}`;
-
-	return formattedTime;
-}
-
-export function getDuration(startTime: Date, finishTime: Date) {
-	if (!startTime || !finishTime) {
-		return 0;
-	}
-	const timeDifference = finishTime.getTime() - startTime.getTime();
-
-	return timeDifference / 1000;
 }

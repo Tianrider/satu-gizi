@@ -15,12 +15,6 @@ const config = {
 	multiplier: isMobile() ? 0.5 : 0.75,
 	quantBytes: 2,
 };
-export const multiPoseDetection = {
-	maxPoseDetections: 5,
-	minPoseConfidence: 0.15,
-	minPartConfidence: 0.1,
-	nmsRadius: 30.0,
-};
 
 export function usePoseNet(
 	input:
@@ -62,10 +56,7 @@ const render =
 		try {
 			const res: Pose[] = await net.estimatePoses(input, {
 				flipHorizontal: true,
-				decodingMethod: "multi-person",
-				maxDetections: multiPoseDetection.maxPoseDetections,
-				scoreThreshold: multiPoseDetection.minPartConfidence,
-				nmsRadius: multiPoseDetection.nmsRadius,
+				decodingMethod: "single-person",
 			});
 
 			setPoses(res);

@@ -1,7 +1,7 @@
 "use client";
 import {useEffect, useRef, useState} from "react";
 import {usePoseNet} from "@/utils/posenet/use-posenet";
-import {draw} from "@/utils/posenet/use-canvas";
+import {draw, predict} from "@/utils/posenet/use-canvas";
 import {Camera, CameraOff, Pause, Play, CheckCircle} from "lucide-react";
 import cn from "classnames";
 
@@ -16,10 +16,19 @@ export default function VideoCanvas() {
 	const poses = usePoseNet(
 		webcamEnabled && !isPaused ? videoRef.current : null
 	);
-	const [prediction] = useState<{
+	const [prediction, setPrediction] = useState<{
 		message: string;
 		probability: number;
-	}>({message: "-", probability: 0});
+		isFullyVisible: boolean;
+		missingParts: string[];
+		isStanding: boolean;
+	}>({
+		message: "-",
+		probability: 0,
+		isFullyVisible: false,
+		missingParts: [],
+		isStanding: false,
+	});
 
 	// Calculate responsive video dimensions without fixed aspect ratio
 	useEffect(() => {
@@ -111,17 +120,21 @@ export default function VideoCanvas() {
 			// Clear canvas
 			const ctx = canvas.getContext("2d");
 			if (ctx) {
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-				// Apply scaling for pose drawing
-				ctx.save();
-				ctx.scale(scaleX, scaleY);
-
-				// Draw poses using the utility function
-				draw(canvas, video, poses);
-
-				ctx.restore();
+				draw(canvas, video, poses, videoSize.width, videoSize.height);
 			}
+
+			// Use centralized predict function for pose analysis
+			const analysis = predict(poses);
+			setPrediction(analysis);
+		} else {
+			// Reset prediction when no poses detected
+			setPrediction({
+				message: "Waiting for pose...",
+				probability: 0,
+				isFullyVisible: false,
+				missingParts: [],
+				isStanding: false,
+			});
 		}
 	}, [poses, videoSize]);
 
@@ -294,8 +307,16 @@ export default function VideoCanvas() {
 				{webcamEnabled && !isLoading && (
 					<div
 						className={cn(
-							"mt-4 mx-4 bg-opacity-80 text-white px-4 py-3 rounded-lg text-center",
-							isPaused ? "bg-red-900" : "bg-black"
+							"mt-4 mx-4 bg-opacity-90 text-white px-4 py-3 rounded-lg text-center",
+							isPaused
+								? "bg-red-900"
+								: prediction.isFullyVisible &&
+								  prediction.isStanding
+								? "bg-green-700"
+								: prediction.isFullyVisible &&
+								  !prediction.isStanding
+								? "bg-yellow-700"
+								: "bg-red-700"
 						)}
 					>
 						{isPaused ? (
@@ -303,14 +324,32 @@ export default function VideoCanvas() {
 						) : (
 							<>
 								<div className="text-lg font-bold">
-									{prediction.message === "-"
-										? "Waiting for pose..."
-										: prediction.message}
+									{prediction.message}
 								</div>
-								<div className="text-sm">
-									Confidence:{" "}
+								<div className="text-sm mt-1">
+									Detection:{" "}
 									{Math.round(prediction.probability * 100)}%
 								</div>
+								{!prediction.isFullyVisible &&
+									prediction.missingParts.length > 0 && (
+										<div className="text-xs mt-1 text-red-200">
+											⚠️ Make sure your entire body is
+											visible
+										</div>
+									)}
+								{prediction.isFullyVisible &&
+									!prediction.isStanding && (
+										<div className="text-xs mt-1 text-yellow-200">
+											⚠️ Stand up straight for accurate
+											measurement
+										</div>
+									)}
+								{prediction.isFullyVisible &&
+									prediction.isStanding && (
+										<div className="text-xs mt-1 text-green-200">
+											✅ Ready for stunting measurement
+										</div>
+									)}
 							</>
 						)}
 					</div>
