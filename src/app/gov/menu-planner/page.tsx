@@ -370,7 +370,7 @@ export default function MenuPlannerPage() {
 
       <div className='bg-white rounded-lg shadow-lg p-8'>
         <h2 className='text-2xl font-semibold text-gray-900 mb-6'>
-          Preview Menu {currentMonth} 2024
+          Preview Menu {currentMonth} 2025
         </h2>
 
         <div className='grid grid-cols-7 gap-3'>
