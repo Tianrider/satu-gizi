@@ -1,139 +1,246 @@
+'use client';
+
+import { useState } from 'react';
+
 export default function MenuPlannerPage() {
+  const [budget, setBudget] = useState(12000);
+  const [carbs, setCarbs] = useState(55);
+  const [protein, setProtein] = useState(20);
+  const [fat, setFat] = useState(25);
+  const [distance, setDistance] = useState(50);
+  const [season, setSeason] = useState('hujan');
+  const [currentMonth, setCurrentMonth] = useState('Januari');
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const months = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+  ];
+
+  const generateMenu = async () => {
+    setIsGenerating(true);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setIsGenerating(false);
+  };
+
+  const getMenuForDate = (date: number) => {
+    const menus = [
+      'Nasi + Ayam Bumbu',
+      'Nasi + Ikan Bakar',
+      'Nasi + Tempe Goreng',
+      'Nasi + Telur Dadar',
+      'Nasi + Daging Sapi',
+      'Nasi + Tahu Isi',
+    ];
+    return menus[date % menus.length];
+  };
+
+  const getPriceForDate = (date: number) => {
+    const basePrice = budget;
+    const variation = Math.floor(Math.random() * 3000) - 1500;
+    return Math.max(5000, basePrice + variation);
+  };
+
+  const totalBudget = budget * 31;
+  const averageCalories = Math.floor(1800 + (budget - 5000) / 100);
+
   return (
-    <div className='space-y-6'>
-      <div className='rounded-lg p-6 flex flex-col justify-center items-center w-full'>
-        <h1 className='text-4xl font-bold text-gray-900 mb-2 text-center'>
-          Constraint-Driven Menu Tuner
+    <div className='space-y-8'>
+      <div className='rounded-lg p-8 flex flex-col justify-center items-center w-full'>
+        <h1 className='text-4xl font-bold text-gray-900 mb-4 text-center'>
+          Menu Planner
         </h1>
         <div
-          className='w-[10rem] h-2'
+          className='w-[12rem] h-3'
           style={{ background: 'linear-gradient(to right, #02B5AC, #D2DD25)' }}
         />
       </div>
 
-      <div className='bg-white rounded-lg shadow-sm p-6'>
-        <h2 className='text-lg font-semibold text-gray-900 mb-4'>
+      <div className='bg-white rounded-lg shadow-lg p-8'>
+        <h2 className='text-2xl font-semibold text-gray-900 mb-6'>
           Parameter Kontrol
         </h2>
 
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          <div className='space-y-2'>
-            <label className='block text-sm font-medium text-gray-700'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+          <div className='space-y-4'>
+            <label className='block text-lg font-medium text-gray-700'>
               Anggaran per Porsi
             </label>
-            <div className='flex items-center space-x-4'>
-              <span className='text-sm text-gray-500'>Rp 5,000</span>
+            <div className='flex items-center space-x-6'>
+              <span className='text-base text-gray-600 font-medium'>
+                Rp 5,000
+              </span>
               <input
                 type='range'
                 min='5000'
                 max='25000'
                 step='1000'
-                className='flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer'
+                value={budget}
+                onChange={(e) => setBudget(Number(e.target.value))}
+                className='flex-1 h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer'
               />
-              <span className='text-sm text-gray-500'>Rp 25,000</span>
+              <span className='text-base text-gray-600 font-medium'>
+                Rp 25,000
+              </span>
             </div>
-            <div className='text-center'>
-              <span className='text-lg font-semibold text-primary'>
-                Rp 12,000
+            <div className='text-center bg-primary/10 p-3 rounded-lg'>
+              <span className='text-2xl font-bold text-primary'>
+                Rp {budget.toLocaleString()}
               </span>
             </div>
           </div>
 
-          <div className='space-y-3'>
-            <label className='block text-sm font-medium text-gray-700'>
+          <div className='space-y-4'>
+            <label className='block text-lg font-medium text-gray-700'>
               Target Makronutrien (% per hari)
             </label>
-            <div className='space-y-2'>
-              <div className='flex justify-between items-center'>
-                <span className='text-sm'>Karbohidrat</span>
-                <span className='text-sm font-medium'>55%</span>
+            <div className='space-y-4'>
+              <div>
+                <div className='flex justify-between items-center mb-2'>
+                  <span className='text-base font-medium'>Karbohidrat</span>
+                  <span className='text-base font-semibold text-primary'>
+                    {carbs}%
+                  </span>
+                </div>
+                <input
+                  type='range'
+                  min='45'
+                  max='65'
+                  value={carbs}
+                  onChange={(e) => setCarbs(Number(e.target.value))}
+                  className='w-full h-3 bg-gray-200 rounded-lg'
+                />
               </div>
-              <input
-                type='range'
-                min='45'
-                max='65'
-                value='55'
-                className='w-full h-2 bg-gray-200 rounded-lg'
-              />
 
-              <div className='flex justify-between items-center'>
-                <span className='text-sm'>Protein</span>
-                <span className='text-sm font-medium'>20%</span>
+              <div>
+                <div className='flex justify-between items-center mb-2'>
+                  <span className='text-base font-medium'>Protein</span>
+                  <span className='text-base font-semibold text-primary'>
+                    {protein}%
+                  </span>
+                </div>
+                <input
+                  type='range'
+                  min='15'
+                  max='30'
+                  value={protein}
+                  onChange={(e) => setProtein(Number(e.target.value))}
+                  className='w-full h-3 bg-gray-200 rounded-lg'
+                />
               </div>
-              <input
-                type='range'
-                min='15'
-                max='30'
-                value='20'
-                className='w-full h-2 bg-gray-200 rounded-lg'
-              />
 
-              <div className='flex justify-between items-center'>
-                <span className='text-sm'>Lemak</span>
-                <span className='text-sm font-medium'>25%</span>
+              <div>
+                <div className='flex justify-between items-center mb-2'>
+                  <span className='text-base font-medium'>Lemak</span>
+                  <span className='text-base font-semibold text-primary'>
+                    {fat}%
+                  </span>
+                </div>
+                <input
+                  type='range'
+                  min='20'
+                  max='35'
+                  value={fat}
+                  onChange={(e) => setFat(Number(e.target.value))}
+                  className='w-full h-3 bg-gray-200 rounded-lg'
+                />
               </div>
-              <input
-                type='range'
-                min='20'
-                max='35'
-                value='25'
-                className='w-full h-2 bg-gray-200 rounded-lg'
-              />
             </div>
           </div>
 
-          <div className='space-y-2'>
-            <label className='block text-sm font-medium text-gray-700'>
+          <div className='space-y-4'>
+            <label className='block text-lg font-medium text-gray-700'>
               Jarak Distribusi Maksimal
             </label>
-            <div className='flex items-center space-x-4'>
-              <span className='text-sm text-gray-500'>10 km</span>
+            <div className='flex items-center space-x-6'>
+              <span className='text-base text-gray-600 font-medium'>10 km</span>
               <input
                 type='range'
                 min='10'
                 max='100'
                 step='5'
-                className='flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer'
+                value={distance}
+                onChange={(e) => setDistance(Number(e.target.value))}
+                className='flex-1 h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer'
               />
-              <span className='text-sm text-gray-500'>100 km</span>
+              <span className='text-base text-gray-600 font-medium'>
+                100 km
+              </span>
             </div>
-            <div className='text-center'>
-              <span className='text-lg font-semibold text-third'>50 km</span>
+            <div className='text-center bg-third/10 p-3 rounded-lg'>
+              <span className='text-2xl font-bold text-third'>
+                {distance} km
+              </span>
             </div>
           </div>
 
-          <div className='space-y-2'>
-            <label className='block text-sm font-medium text-gray-700'>
+          <div className='space-y-4'>
+            <label className='block text-lg font-medium text-gray-700'>
               Ketersediaan Musiman
             </label>
-            <select className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary'>
-              <option>Musim Hujan (Nov - Mar)</option>
-              <option>Musim Kemarau (Apr - Oct)</option>
-              <option>Sepanjang Tahun</option>
+            <select
+              value={season}
+              onChange={(e) => setSeason(e.target.value)}
+              className='w-full p-4 text-base border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary'
+            >
+              <option value='hujan'>Musim Hujan (Nov - Mar)</option>
+              <option value='kemarau'>Musim Kemarau (Apr - Oct)</option>
+              <option value='sepanjang'>Sepanjang Tahun</option>
             </select>
-            <div className='text-xs text-gray-500'>
-              Berdasarkan data satelit dan forecast panen
+            <div className='text-sm text-gray-600 bg-gray-50 p-3 rounded-lg'>
+              *Berdasarkan data satelit dan forecast panen
             </div>
           </div>
         </div>
 
-        <div className='mt-6 flex justify-end'>
-          <button className='bg-primary text-white px-6 py-2 rounded-md hover:bg-primary/90 transition-colors'>
-            Generate Menu Bulanan
+        <div className='mt-8 flex justify-between items-center'>
+          <div className='flex items-center space-x-4'>
+            <label className='text-lg font-medium text-gray-700'>Bulan:</label>
+            <select
+              value={currentMonth}
+              onChange={(e) => setCurrentMonth(e.target.value)}
+              className='p-3 text-base border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary'
+            >
+              {months.map((month) => (
+                <option
+                  key={month}
+                  value={month}
+                >
+                  {month}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            onClick={generateMenu}
+            disabled={isGenerating}
+            className='bg-primary text-white px-8 py-4 text-lg font-semibold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+          >
+            {isGenerating ? 'Generating...' : 'Generate Menu Bulanan'}
           </button>
         </div>
       </div>
 
-      <div className='bg-white rounded-lg shadow-sm p-6'>
-        <h2 className='text-lg font-semibold text-gray-900 mb-4'>
-          Preview Menu Januari 2024
+      <div className='bg-white rounded-lg shadow-lg p-8'>
+        <h2 className='text-2xl font-semibold text-gray-900 mb-6'>
+          Preview Menu {currentMonth} 2024
         </h2>
 
-        <div className='grid grid-cols-7 gap-2 text-center'>
+        <div className='grid grid-cols-7 gap-3'>
           {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((day) => (
             <div
               key={day}
-              className='p-2 text-sm font-medium text-gray-500'
+              className='p-4 text-center text-lg font-semibold text-gray-600 bg-gray-100 rounded-lg'
             >
               {day}
             </div>
@@ -142,18 +249,14 @@ export default function MenuPlannerPage() {
           {Array.from({ length: 31 }, (_, i) => i + 1).map((date) => (
             <div
               key={date}
-              className='p-2 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer'
+              className='p-4 border-2 border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors'
             >
-              <div className='text-sm font-medium'>{date}</div>
-              <div className='text-xs text-gray-600 mt-1'>
-                {date % 3 === 0
-                  ? 'Nasi + Ayam'
-                  : date % 2 === 0
-                  ? 'Nasi + Ikan'
-                  : 'Nasi + Tempe'}
+              <div className='text-lg font-bold text-gray-900 mb-2'>{date}</div>
+              <div className='text-base text-gray-700 mb-3 leading-tight'>
+                {getMenuForDate(date)}
               </div>
-              <div className='text-xs text-third'>
-                Rp {(10000 + (date % 5) * 1000).toLocaleString()}
+              <div className='bg-red-600 text-white px-3 py-1 rounded-md text-base font-bold text-center'>
+                Rp {getPriceForDate(date).toLocaleString()}
               </div>
             </div>
           ))}
@@ -161,28 +264,34 @@ export default function MenuPlannerPage() {
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-        <div className='bg-white rounded-lg shadow-sm p-6'>
-          <h3 className='text-sm font-medium text-gray-500'>
+        <div className='bg-white rounded-lg shadow-lg p-8 text-center'>
+          <h3 className='text-lg font-medium text-gray-600 mb-2'>
             Total Anggaran Bulanan
           </h3>
-          <p className='text-2xl font-bold text-primary'>Rp 372,000</p>
-          <p className='text-xs text-gray-500'>Per anak per bulan</p>
+          <p className='text-4xl font-bold text-primary mb-2'>
+            Rp {totalBudget.toLocaleString()}
+          </p>
+          <p className='text-base text-gray-600'>Per anak per bulan</p>
         </div>
 
-        <div className='bg-white rounded-lg shadow-sm p-6'>
-          <h3 className='text-sm font-medium text-gray-500'>
+        <div className='bg-white rounded-lg shadow-lg p-8 text-center'>
+          <h3 className='text-lg font-medium text-gray-600 mb-2'>
             Rata-rata Kalori
           </h3>
-          <p className='text-2xl font-bold text-third'>1,850 kcal</p>
-          <p className='text-xs text-gray-500'>
+          <p className='text-4xl font-bold text-third mb-2'>
+            {averageCalories.toLocaleString()} kcal
+          </p>
+          <p className='text-base text-gray-600'>
             Sesuai AKG anak usia 7-9 tahun
           </p>
         </div>
 
-        <div className='bg-white rounded-lg shadow-sm p-6'>
-          <h3 className='text-sm font-medium text-gray-500'>Vendor Terlibat</h3>
-          <p className='text-2xl font-bold text-secondary'>12 vendor</p>
-          <p className='text-xs text-gray-500'>Dengan rating keamanan A</p>
+        <div className='bg-white rounded-lg shadow-lg p-8 text-center'>
+          <h3 className='text-lg font-medium text-gray-600 mb-2'>
+            Vendor Terlibat
+          </h3>
+          <p className='text-4xl font-bold text-secondary mb-2'>12 vendor</p>
+          <p className='text-base text-gray-600'>Dengan rating keamanan A</p>
         </div>
       </div>
     </div>

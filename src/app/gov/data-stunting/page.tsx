@@ -122,12 +122,12 @@ export default function DataStuntingPage() {
 
   return (
     <div className='space-y-6'>
-      <div className='rounded-lg p-6 flex flex-col justify-center items-center w-full'>
-        <h1 className='text-4xl font-bold text-gray-900 mb-2 text-center'>
+      <div className='rounded-lg p-8 flex flex-col justify-center items-center w-full'>
+        <h1 className='text-4xl font-bold text-gray-900 mb-4 text-center'>
           Data Stunting
         </h1>
         <div
-          className='w-[10rem] h-2'
+          className='w-[12rem] h-3'
           style={{ background: 'linear-gradient(to right, #D50B8B, #02B5AC)' }}
         />
       </div>
