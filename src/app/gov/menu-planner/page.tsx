@@ -1,14 +1,14 @@
 export default function MenuPlannerPage() {
   return (
     <div className='space-y-6'>
-      <div className='bg-white rounded-lg shadow-sm p-6'>
-        <h1 className='text-2xl font-bold text-gray-900 mb-2'>
+      <div className='rounded-lg p-6 flex flex-col justify-center items-center w-full'>
+        <h1 className='text-4xl font-bold text-gray-900 mb-2 text-center'>
           Constraint-Driven Menu Tuner
         </h1>
-        <p className='text-gray-600'>
-          Rencanakan menu bergizi untuk seluruh bulan dengan parameter yang
-          dapat disesuaikan
-        </p>
+        <div
+          className='w-[10rem] h-2'
+          style={{ background: 'linear-gradient(to right, #02B5AC, #D2DD25)' }}
+        />
       </div>
 
       <div className='bg-white rounded-lg shadow-sm p-6'>
