@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Marquee from 'react-fast-marquee';
 import Image from 'next/image';
+import { sendHelloRequest } from './azure-openai';
 
 export default function MenuPlannerPage() {
   const [budget, setBudget] = useState(12000);
@@ -13,6 +14,8 @@ export default function MenuPlannerPage() {
   const [season, setSeason] = useState('hujan');
   const [currentMonth, setCurrentMonth] = useState('Januari');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [testResponse, setTestResponse] = useState('');
+  const [isTesting, setIsTesting] = useState(false);
 
   const months = [
     'Januari',
@@ -38,6 +41,20 @@ export default function MenuPlannerPage() {
     setIsGenerating(true);
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setIsGenerating(false);
+  };
+
+  const testAzureOpenAI = async () => {
+    setIsTesting(true);
+    setTestResponse('');
+    try {
+      const response = await sendHelloRequest();
+      setTestResponse(response);
+    } catch (error) {
+      setTestResponse(
+        `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    }
+    setIsTesting(false);
   };
 
   const getMenuForDate = (date: number) => {
@@ -95,6 +112,29 @@ export default function MenuPlannerPage() {
             ))}
           </Marquee>
         </div>
+      </div>
+
+      <div className='bg-white rounded-lg shadow-lg p-8'>
+        <h2 className='text-2xl font-semibold text-gray-900 mb-6'>
+          Azure OpenAI Test
+        </h2>
+        <div className='flex items-center space-x-4 mb-4'>
+          <button
+            onClick={testAzureOpenAI}
+            disabled={isTesting}
+            className='bg-blue-600 text-white px-6 py-3 text-lg font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+          >
+            {isTesting ? 'Testing...' : 'Test Hello Request'}
+          </button>
+        </div>
+        {testResponse && (
+          <div className='bg-gray-50 p-4 rounded-lg border'>
+            <h3 className='text-lg font-medium text-gray-900 mb-2'>
+              Response:
+            </h3>
+            <p className='text-gray-700 whitespace-pre-wrap'>{testResponse}</p>
+          </div>
+        )}
       </div>
 
       <div className='bg-white rounded-lg shadow-lg p-8'>
