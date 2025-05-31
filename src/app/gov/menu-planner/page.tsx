@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Marquee from 'react-fast-marquee';
 import Image from 'next/image';
-import { sendHelloRequest } from './azure-openai';
+// import { sendHelloRequest } from './azure-openai';
+import { generateMonthlyMenu } from './menu-generator';
 
 export default function MenuPlannerPage() {
   const [budget, setBudget] = useState(12000);
@@ -17,6 +18,8 @@ export default function MenuPlannerPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [testResponse, setTestResponse] = useState('');
   const [isTesting, setIsTesting] = useState(false);
+  const [generatedMenus, setGeneratedMenus] = useState<any>(null);
+  const [generateError, setGenerateError] = useState<string>('');
 
   const months = [
     'Januari',
@@ -78,25 +81,32 @@ export default function MenuPlannerPage() {
 
   const generateMenu = async () => {
     setIsGenerating(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsGenerating(false);
-  };
-
-  const testAzureOpenAI = async () => {
-    setIsTesting(true);
-    setTestResponse('');
+    setGenerateError('');
     try {
-      const response = await sendHelloRequest();
-      setTestResponse(response);
+      const menuData = await generateMonthlyMenu({
+        budget,
+        carbs,
+        protein,
+        fat,
+        distance,
+        season,
+        month: currentMonth,
+        province: currentProvince,
+      });
+      setGeneratedMenus(menuData);
     } catch (error) {
-      setTestResponse(
+      setGenerateError(
         `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
-    setIsTesting(false);
+    setIsGenerating(false);
   };
 
   const getMenuForDate = (date: number) => {
+    if (generatedMenus?.daily_menus) {
+      const menu = generatedMenus.daily_menus.find((m: any) => m.date === date);
+      return menu?.menu_name || 'Menu tidak tersedia';
+    }
     const menus = [
       'Nasi + Ayam Bumbu',
       'Nasi + Ikan Bakar',
@@ -109,13 +119,30 @@ export default function MenuPlannerPage() {
   };
 
   const getPriceForDate = (date: number) => {
+    if (generatedMenus?.daily_menus) {
+      const menu = generatedMenus.daily_menus.find((m: any) => m.date === date);
+      return menu?.price_per_portion || budget;
+    }
     const basePrice = budget;
-    const variation = Math.floor(Math.random() * 3000) - 1500;
+    const seed = date * 37; // Use date as seed for deterministic "random" variation
+    const variation = Math.floor(seed % 3000) - 1500;
     return Math.max(5000, basePrice + variation);
   };
 
-  const totalBudget = budget * 31;
-  const averageCalories = Math.floor(1800 + (budget - 5000) / 100);
+  const getDaysInMonth = (month: string) => {
+    const monthIndex = months.indexOf(month);
+    return new Date(2025, monthIndex + 1, 0).getDate();
+  };
+
+  const daysInCurrentMonth = getDaysInMonth(currentMonth);
+
+  const totalBudget =
+    generatedMenus?.monthly_summary?.total_monthly_budget ||
+    budget * daysInCurrentMonth;
+  const averageCalories =
+    generatedMenus?.monthly_summary?.average_daily_calories ||
+    Math.floor(1800 + (budget - 5000) / 100);
+  const vendorCount = 5;
 
   const formatCurrency = (amount: number) => {
     return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -155,29 +182,6 @@ export default function MenuPlannerPage() {
             ))}
           </Marquee>
         </div>
-      </div>
-
-      <div className='bg-white rounded-lg shadow-lg p-8'>
-        <h2 className='text-2xl font-semibold text-gray-900 mb-6'>
-          Azure OpenAI Test
-        </h2>
-        <div className='flex items-center space-x-4 mb-4'>
-          <button
-            onClick={testAzureOpenAI}
-            disabled={isTesting}
-            className='bg-blue-600 text-white px-6 py-3 text-lg font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
-          >
-            {isTesting ? 'Testing...' : 'Test Hello Request'}
-          </button>
-        </div>
-        {testResponse && (
-          <div className='bg-gray-50 p-4 rounded-lg border'>
-            <h3 className='text-lg font-medium text-gray-900 mb-2'>
-              Response:
-            </h3>
-            <p className='text-gray-700 whitespace-pre-wrap'>{testResponse}</p>
-          </div>
-        )}
       </div>
 
       <div className='bg-white rounded-lg shadow-lg p-8'>
@@ -366,12 +370,31 @@ export default function MenuPlannerPage() {
             {isGenerating ? 'Generating...' : 'Generate Menu Bulanan'}
           </button>
         </div>
+        {generateError && (
+          <div className='mt-4 bg-red-50 p-4 rounded-lg border border-red-200'>
+            <h3 className='text-lg font-medium text-red-900 mb-2'>
+              Generation Error:
+            </h3>
+            <p className='text-red-700 whitespace-pre-wrap'>{generateError}</p>
+          </div>
+        )}
       </div>
 
       <div className='bg-white rounded-lg shadow-lg p-8'>
-        <h2 className='text-2xl font-semibold text-gray-900 mb-6'>
-          Preview Menu {currentMonth} 2025
-        </h2>
+        <div className='flex justify-between items-center mb-6'>
+          <h2 className='text-2xl font-semibold text-gray-900'>
+            Preview Menu {currentMonth} 2025
+          </h2>
+          {generatedMenus ? (
+            <span className='bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium'>
+              ✓ AI Generated
+            </span>
+          ) : (
+            <span className='bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium'>
+              Sample Data
+            </span>
+          )}
+        </div>
 
         <div className='grid grid-cols-7 gap-3'>
           {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((day) => (
@@ -383,52 +406,58 @@ export default function MenuPlannerPage() {
             </div>
           ))}
 
-          {Array.from({ length: 31 }, (_, i) => i + 1).map((date) => (
-            <div
-              key={date}
-              className='p-4 border-2 border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors'
-            >
-              <div className='text-lg font-bold text-gray-900 mb-2'>{date}</div>
-              <div className='text-base text-gray-700 mb-3 leading-tight'>
-                {getMenuForDate(date)}
+          {Array.from({ length: daysInCurrentMonth }, (_, i) => i + 1).map(
+            (date) => (
+              <div
+                key={date}
+                className='p-4 border-2 border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors relative overflow-hidden h-60'
+              >
+                <div className='text-3xl font-bold text-gray-900 mb-2 text-center w-full'>
+                  {date}
+                </div>
+                <div className='text-base text-gray-700 mb-3 leading-tight'>
+                  {getMenuForDate(date)}
+                </div>
+                <div className='bg-red-600 text-white px-3 py-1 text-base font-bold text-center absolute w-full left-0 bottom-0'>
+                  Rp {formatCurrency(getPriceForDate(date))}
+                </div>
               </div>
-              <div className='bg-red-600 text-white px-3 py-1 rounded-md text-base font-bold text-center'>
-                Rp {formatCurrency(getPriceForDate(date))}
-              </div>
-            </div>
-          ))}
+            )
+          )}
         </div>
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-        <div className='bg-white rounded-lg shadow-lg p-8 text-center'>
-          <h3 className='text-lg font-medium text-gray-600 mb-2'>
+        <div className='bg-primary rounded-lg shadow-lg p-8 text-center'>
+          <h3 className='text-lg font-medium text-white mb-2'>
             Total Anggaran Bulanan
           </h3>
-          <p className='text-4xl font-bold text-primary mb-2'>
+          <p className='text-4xl font-bold text-white mb-2'>
             Rp {formatCurrency(totalBudget)}
           </p>
-          <p className='text-base text-gray-600'>Per anak per bulan</p>
+          <p className='text-base text-white'>Per anak per bulan</p>
         </div>
 
-        <div className='bg-white rounded-lg shadow-lg p-8 text-center'>
-          <h3 className='text-lg font-medium text-gray-600 mb-2'>
+        <div className='bg-third rounded-lg shadow-lg p-8 text-center'>
+          <h3 className='text-lg font-medium text-white mb-2'>
             Rata-rata Kalori
           </h3>
-          <p className='text-4xl font-bold text-third mb-2'>
+          <p className='text-4xl font-bold text-white mb-2'>
             {formatCurrency(averageCalories)} kcal
           </p>
-          <p className='text-base text-gray-600'>
+          <p className='text-base text-white'>
             Sesuai AKG anak usia 7-9 tahun
           </p>
         </div>
 
-        <div className='bg-white rounded-lg shadow-lg p-8 text-center'>
-          <h3 className='text-lg font-medium text-gray-600 mb-2'>
+        <div className='bg-secondary rounded-lg shadow-lg p-8 text-center'>
+          <h3 className='text-lg font-medium text-white mb-2'>
             Vendor Terlibat
           </h3>
-          <p className='text-4xl font-bold text-secondary mb-2'>12 vendor</p>
-          <p className='text-base text-gray-600'>Dengan rating keamanan A</p>
+          <p className='text-4xl font-bold text-white mb-2'>
+            {vendorCount} vendor
+          </p>
+          <p className='text-base text-white'>Dengan rating keamanan A</p>
         </div>
       </div>
     </div>

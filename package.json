@@ -15,6 +15,7 @@
 		"inferencejs": "^1.0.21",
 		"lucide-react": "^0.511.0",
 		"next": "15.3.1",
+		"openai": "^5.0.1",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"react-fast-marquee": "^1.6.5",
