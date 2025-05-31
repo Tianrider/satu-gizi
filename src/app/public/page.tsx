@@ -4,7 +4,6 @@ import {Swiper, SwiperSlide} from "swiper/react";
 import {Pagination, Autoplay} from "swiper/modules";
 import Link from "next/link";
 
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
 import {User} from "lucide-react";
@@ -21,10 +20,10 @@ export default function PublicHome() {
 				<div className="text-white">
 					<h1 className="text-2xl font-semibold">
 						Selamat Pagi,{" "}
-						<span className="font-bold">Oscar Ryanda Putra</span>
+						<span className="font-bold">Pak Oscar</span>
 					</h1>
 					<p className="text-sm ">
-						Anda belum klaim Makan Bergizi Gratis hari ini
+						Pantau dan Pastikan Keamanan Makanan Anak Didik Anda
 					</p>
 				</div>
 			</div>
@@ -32,7 +31,7 @@ export default function PublicHome() {
 			{/* Quick Action Carousel */}
 			<div className="space-y-3">
 				<h2 className="text-lg font-semibold text-white">
-					Quick Action Carousel
+					Aksi Cepat
 				</h2>
 				<div className="relative">
 					<Swiper
@@ -82,10 +81,7 @@ export default function PublicHome() {
 												Scan Makanan
 											</h3>
 											<p className="text-white/80 text-sm">
-												Memindai makanan untuk
-												mengetahui kandungan gizi dan
-												kemungkinan bahan tambahan
-												berbahaya
+												Periksa kandungan gizi dan keamanan makanan anak didik
 											</p>
 										</div>
 									</div>
@@ -115,8 +111,7 @@ export default function PublicHome() {
 											Edukasi Gizi
 										</h3>
 										<p className="text-white/80 text-sm">
-											Pelajari pentingnya gizi seimbang
-											untuk kesehatan keluarga
+											Pelajari panduan gizi seimbang
 										</p>
 									</div>
 								</div>
@@ -129,7 +124,7 @@ export default function PublicHome() {
 			{/* Perkembangan Tumbuh Anak */}
 			<div className="bg-white rounded-xl p-4 border border-gray-100">
 				<h3 className="text-lg font-semibold text-gray-900 mb-4">
-					Perkembangan Tumbuh Anak
+					Monitoring Tumbuh Kembang Anak Didik
 				</h3>
 
 				<div className="flex items-center space-x-3 mb-4">
@@ -139,21 +134,20 @@ export default function PublicHome() {
 					<div className="flex-1">
 						<div className="flex items-center space-x-2 mb-1">
 							<span className="text-sm font-medium text-gray-900">
-								Tinggi baik:
+								Status gizi:
 							</span>
 							<span className="text-sm font-bold text-third">
-								127.3 cm
+								Baik
 							</span>
 							<span className="text-xs text-gray-500">
-								berat bertambah
+								tinggi badan
 							</span>
 							<span className="text-xs font-bold text-secondary">
-								1.6x
+								127.3 cm
 							</span>
 						</div>
 						<p className="text-xs text-gray-600">
-							Yo, Pantau terus gizinya untuk tumbuh kembang
-							optimal
+							Terus pantau asupan gizi untuk pertumbuhan optimal
 						</p>
 					</div>
 				</div>
@@ -162,7 +156,7 @@ export default function PublicHome() {
 					<div>
 						<div className="flex justify-between text-xs mb-1">
 							<span className="text-gray-600">Tinggi Badan</span>
-							<span className="font-medium">74.5m</span>
+							<span className="font-medium">127.3 cm</span>
 						</div>
 						<div className="w-full bg-gray-200 rounded-full h-2">
 							<div
@@ -175,7 +169,7 @@ export default function PublicHome() {
 					<div>
 						<div className="flex justify-between text-xs mb-1">
 							<span className="text-gray-600">Berat Badan</span>
-							<span className="font-medium">12.9 kg</span>
+							<span className="font-medium">25.2 kg</span>
 						</div>
 						<div className="w-full bg-gray-200 rounded-full h-2">
 							<div
@@ -207,7 +201,7 @@ export default function PublicHome() {
 					</div>
 					<div className="flex-1">
 						<h3 className="text-lg font-semibold text-gray-900">
-							AKG Summary
+							Ringkasan AKG
 						</h3>
 					</div>
 					<div className="text-right">
@@ -215,7 +209,7 @@ export default function PublicHome() {
 							45%
 						</div>
 						<div className="text-xs text-gray-600">
-							kebutuhan gizi terpenuhi
+							kebutuhan gizi harian terpenuhi
 						</div>
 					</div>
 				</div>
@@ -294,23 +288,17 @@ export default function PublicHome() {
 			{/* Komunitas & Berita */}
 			<div className="bg-white rounded-xl p-4 border border-gray-100">
 				<h3 className="text-lg font-semibold text-gray-900 mb-4">
-					Komunitas & Berita
+					Informasi Gizi & Keamanan Pangan
 				</h3>
 
 				<div className="space-y-4">
 					<div className="flex space-x-3">
-						<div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex-shrink-0 overflow-hidden">
-							<div
-								className="w-full h-full bg-cover bg-center"
-								style={{
-									backgroundImage:
-										'url("/api/placeholder/64/64")',
-								}}
-							></div>
+						<div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex-shrink-0 flex items-center justify-center">
+							<span className="text-white text-2xl">🏫</span>
 						</div>
 						<div className="flex-1 min-w-0">
 							<h4 className="font-medium text-sm text-gray-900 mb-1">
-								Desa Prayungan turun stunting 5%
+								Program Gizi Sekolah Berhasil Turunkan Stunting 5%
 							</h4>
 							<p
 								className="text-xs text-gray-600 mb-2 overflow-hidden"
@@ -320,9 +308,7 @@ export default function PublicHome() {
 									WebkitBoxOrient: "vertical" as const,
 								}}
 							>
-								Pada tahun Kartu Tonggal 07 januari 2021
-								Bertempat di Gedung PMK Desa Prayungan
-								Kecamatan...
+								Implementasi program pemantauan gizi di sekolah dasar berhasil menurunkan angka stunting sebesar 5% dalam satu tahun...
 							</p>
 							<button className="text-xs text-third font-medium">
 								Baca Selengkapnya
@@ -336,11 +322,10 @@ export default function PublicHome() {
 						</div>
 						<div className="flex-1 min-w-0">
 							<h4 className="font-medium text-sm text-gray-900 mb-1">
-								Tips sayuran turun
+								Cara Mendeteksi Makanan Berbahaya untuk Anak
 							</h4>
 							<p className="text-xs text-gray-600 mb-2">
-								Bagaimana cara mengolah sayuran yang benar untuk
-								anak
+								Panduan lengkap mengidentifikasi makanan yang aman dan bergizi untuk anak didik
 							</p>
 							<button className="text-xs text-third font-medium">
 								Baca Selengkapnya
