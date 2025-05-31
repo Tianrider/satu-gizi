@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import Marquee from 'react-fast-marquee';
+import Image from 'next/image';
 
 export default function MenuPlannerPage() {
   const [budget, setBudget] = useState(12000);
@@ -26,6 +28,11 @@ export default function MenuPlannerPage() {
     'November',
     'Desember',
   ];
+
+  const foodImages = Array.from(
+    { length: 11 },
+    (_, i) => `/food-image/food-image-${i + 1}.jpg`
+  );
 
   const generateMenu = async () => {
     setIsGenerating(true);
@@ -61,9 +68,33 @@ export default function MenuPlannerPage() {
           Menu Planner
         </h1>
         <div
-          className='w-[12rem] h-3'
+          className='w-[12rem] h-3 mb-6'
           style={{ background: 'linear-gradient(to right, #02B5AC, #D2DD25)' }}
         />
+
+        <div className='w-full mt-4 -mb-2'>
+          <Marquee
+            speed={40}
+            gradient={true}
+            gradientColor='#F9FAFB'
+            gradientWidth={100}
+          >
+            {foodImages.map((image, index) => (
+              <div
+                key={index}
+                className='mx-3'
+              >
+                <Image
+                  src={image}
+                  alt={`Food ${index + 1}`}
+                  width={160}
+                  height={120}
+                  className='rounded-lg object-cover shadow-md'
+                />
+              </div>
+            ))}
+          </Marquee>
+        </div>
       </div>
 
       <div className='bg-white rounded-lg shadow-lg p-8'>
