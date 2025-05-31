@@ -1,12 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, X } from 'lucide-react';
 import Image from 'next/image';
 import Navbar from '@/app/shared/navbar';
 
 export default function FoodResultPage() {
   const router = useRouter();
+  const [isComicModalOpen, setIsComicModalOpen] = useState(false);
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-pink-400 to-white'>
@@ -182,7 +184,10 @@ export default function FoodResultPage() {
                 <span className='text-xs font-medium bg-white/20 px-2 py-1 rounded-full backdrop-blur-sm'>
                   2 Halaman
                 </span>
-                <button className='bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded-full transition-colors shadow-lg'>
+                <button
+                  onClick={() => setIsComicModalOpen(true)}
+                  className='bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded-full transition-colors shadow-lg'
+                >
                   Baca Cerita
                 </button>
               </div>
@@ -190,6 +195,47 @@ export default function FoodResultPage() {
           </div>
         </div>
       </div>
+
+      {/* Comic Story Modal */}
+      {isComicModalOpen && (
+        <div className='fixed inset-0 !z-[100] flex items-center justify-center'>
+          <div
+            className='absolute inset-0 bg-black/50 backdrop-blur-sm'
+            onClick={() => setIsComicModalOpen(false)}
+          ></div>
+
+          <div className='relative z-10 w-full max-w-md mx-4 max-h-[90vh] bg-white rounded-lg shadow-2xl overflow-hidden'>
+            <button
+              onClick={() => setIsComicModalOpen(false)}
+              className='absolute top-4 right-4 z-20 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors'
+            >
+              <X className='h-5 w-5' />
+            </button>
+
+            <div className='overflow-y-auto max-h-[90vh]'>
+              <div className='relative'>
+                <Image
+                  src='/comic/comic-1.png'
+                  alt='Comic Page 1'
+                  width={400}
+                  height={600}
+                  className='w-full h-auto'
+                />
+              </div>
+
+              <div className='relative'>
+                <Image
+                  src='/comic/comic-2.png'
+                  alt='Comic Page 2'
+                  width={400}
+                  height={600}
+                  className='w-full h-auto'
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Navbar />
     </div>
