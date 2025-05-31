@@ -11,6 +11,22 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import {
+  IconChartLine,
+  IconMap,
+  IconTrendingDown,
+  IconUsers,
+  IconMapPin,
+  IconChartBar,
+  IconTarget,
+  IconCalendar,
+  IconAnalyze,
+  IconChartArea,
+  IconDatabase,
+  IconReportAnalytics,
+  IconAlertTriangle,
+  IconTrendingUp,
+} from '@tabler/icons-react';
 
 const stuntingData = [
   { month: 'Jan 2023', prevalence: 21.6, target: 20.0 },
@@ -69,9 +85,9 @@ const provincialStuntingData = [
 ];
 
 const getBarColor = (rate: number) => {
-  if (rate >= 30) return 'bg-red-500';
-  if (rate >= 18) return 'bg-yellow-500';
-  return 'bg-green-500';
+  if (rate >= 30) return 'bg-gradient-to-r from-red-500 to-red-600';
+  if (rate >= 18) return 'bg-gradient-to-r from-yellow-500 to-yellow-600';
+  return 'bg-gradient-to-r from-green-500 to-green-600';
 };
 
 const getTextColor = (rate: number) => {
@@ -87,7 +103,6 @@ export default function DataStuntingPage() {
     script.async = true;
 
     script.onload = () => {
-      // Handle first visualization (country-wide per province map)
       const divElement1 = document.getElementById('viz1748679246694');
       if (divElement1) {
         const vizElement1 = divElement1.getElementsByTagName('object')[0];
@@ -97,7 +112,6 @@ export default function DataStuntingPage() {
         }
       }
 
-      // Handle second visualization (district/city level)
       const divElement2 = document.getElementById('viz1748681242886');
       if (divElement2) {
         const vizElement2 = divElement2.getElementsByTagName('object')[0];
@@ -121,27 +135,47 @@ export default function DataStuntingPage() {
   }, []);
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-8'>
       <div className='rounded-lg p-8 flex flex-col justify-center items-center w-full'>
-        <h1 className='text-4xl font-bold text-gray-900 mb-4 text-center'>
-          Data Stunting
-        </h1>
+        <div className='flex items-center gap-4 mb-4'>
+          <h1 className='text-4xl font-bold text-gray-900 text-center'>
+            Data Stunting Indonesia
+          </h1>
+        </div>
         <div
-          className='w-[12rem] h-3'
-          style={{ background: 'linear-gradient(to right, #D50B8B, #02B5AC)' }}
+          className='w-[12rem] h-3 mb-0'
+          style={{ background: 'linear-gradient(to right, #D50B8B, #D2DD25)' }}
         />
       </div>
 
-      <div className='bg-white rounded-lg shadow-sm p-6 pb-14'>
-        <h2 className='text-2xl font-bold text-gray-900 mb-4'>
-          Data Stunting Per Provinsi (2018-2023)
-        </h2>
-        <div className='flex gap-4 h-[600px]'>
+      <div className='bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-xl p-8 pb-34 border border-blue-100'>
+        <div className='flex items-center mb-6'>
+          <div className='w-2 h-8 bg-gradient-to-b from-primary to-secondary rounded-full mr-4'></div>
+          <IconMap
+            size={32}
+            className='text-primary mr-3'
+          />
+          <h2 className='text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent'>
+            Data Stunting Per Provinsi (2018-2023)
+          </h2>
+        </div>
+        <div className='flex gap-6 h-[600px]'>
           <div className='w-3/4'>
-            <h3 className='text-md font-medium text-gray-700 mb-2'>
-              Peta Prevalensi Stunting
-            </h3>
-            <div className='w-full h-full'>
+            <div className='bg-gradient-to-r from-third/10 to-primary/10 rounded-lg p-4 mb-4'>
+              <div className='flex items-center gap-2 mb-2'>
+                <IconMapPin
+                  size={20}
+                  className='text-primary'
+                />
+                <h3 className='text-lg font-semibold text-gray-800'>
+                  Peta Prevalensi Stunting
+                </h3>
+              </div>
+              <p className='text-sm text-gray-600'>
+                Visualisasi data stunting per provinsi tahun 2018-2023
+              </p>
+            </div>
+            <div className='w-full h-full bg-white rounded-xl shadow-lg p-4'>
               <div
                 className='tableauPlaceholder'
                 id='viz1748679246694'
@@ -223,11 +257,20 @@ export default function DataStuntingPage() {
           </div>
 
           <div className='w-1/4'>
-            <h3 className='text-md font-medium text-gray-700 mb-2'>
-              Prevalensi per Provinsi (%)
-            </h3>
-            <div className='w-full h-full overflow-y-auto bg-gray-50 rounded-lg p-2'>
-              <div className='space-y-1'>
+            <div className='bg-gradient-to-br from-secondary/10 to-third/10 rounded-lg p-4 mb-4'>
+              <div className='flex items-center gap-2 mb-2'>
+                <IconChartBar
+                  size={20}
+                  className='text-secondary'
+                />
+                <h3 className='text-lg font-semibold text-gray-800'>
+                  Prevalensi per Provinsi
+                </h3>
+              </div>
+              <p className='text-sm text-gray-600'>Berdasarkan prevalensi</p>
+            </div>
+            <div className='w-full h-full overflow-y-auto bg-gradient-to-br from-gray-50 to-white rounded-xl shadow-lg p-4 border border-gray-100'>
+              <div className='space-y-3'>
                 {provincialStuntingData.map((item, index) => {
                   const maxRate = Math.max(
                     ...provincialStuntingData.map((p) => p.rate)
@@ -237,11 +280,11 @@ export default function DataStuntingPage() {
                   return (
                     <div
                       key={index}
-                      className='mb-2'
+                      className='bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100'
                     >
-                      <div className='flex justify-between items-center mb-1'>
+                      <div className='flex justify-between items-center mb-2'>
                         <span
-                          className='text-xs font-medium text-gray-700 truncate'
+                          className='text-sm font-semibold text-gray-800 truncate'
                           title={item.province}
                         >
                           {item.province.length > 15
@@ -249,16 +292,16 @@ export default function DataStuntingPage() {
                             : item.province}
                         </span>
                         <span
-                          className={`text-xs font-bold ${getTextColor(
+                          className={`text-sm font-bold px-2 py-1 rounded-full ${getTextColor(
                             item.rate
                           )}`}
                         >
                           {item.rate}%
                         </span>
                       </div>
-                      <div className='w-full bg-gray-200 rounded-full h-2'>
+                      <div className='w-full bg-gray-200 rounded-full h-3 shadow-inner'>
                         <div
-                          className={`h-2 rounded-full transition-all duration-300 ${getBarColor(
+                          className={`h-3 rounded-full transition-all duration-300 shadow-sm ${getBarColor(
                             item.rate
                           )}`}
                           style={{ width: `${barWidth}%` }}
@@ -268,18 +311,35 @@ export default function DataStuntingPage() {
                   );
                 })}
               </div>
-              <div className='mt-4 text-xs text-gray-600 border-t pt-2'>
-                <div className='flex items-center gap-2 mb-1'>
-                  <div className='w-3 h-2 bg-red-500 rounded'></div>
-                  <span>≥30% (Tinggi)</span>
+              <div className='mt-6 text-sm bg-white rounded-lg p-4 border border-gray-200 shadow-sm'>
+                <div className='flex items-center gap-2 mb-3'>
+                  <IconAnalyze
+                    size={18}
+                    className='text-gray-700'
+                  />
+                  <h4 className='font-semibold text-gray-800'>
+                    Kategori Stunting
+                  </h4>
                 </div>
-                <div className='flex items-center gap-2 mb-1'>
-                  <div className='w-3 h-2 bg-yellow-500 rounded'></div>
-                  <span>18-29% (Sedang)</span>
-                </div>
-                <div className='flex items-center gap-2'>
-                  <div className='w-3 h-2 bg-green-500 rounded'></div>
-                  <span>&lt;18% (Rendah)</span>
+                <div className='space-y-2'>
+                  <div className='flex items-center gap-3'>
+                    <div className='w-4 h-3 bg-gradient-to-r from-red-500 to-red-600 rounded shadow-sm'></div>
+                    <span className='text-red-700 font-medium'>
+                      ≥30% (Tinggi)
+                    </span>
+                  </div>
+                  <div className='flex items-center gap-3'>
+                    <div className='w-4 h-3 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded shadow-sm'></div>
+                    <span className='text-yellow-700 font-medium'>
+                      18-29% (Sedang)
+                    </span>
+                  </div>
+                  <div className='flex items-center gap-3'>
+                    <div className='w-4 h-3 bg-gradient-to-r from-green-500 to-green-600 rounded shadow-sm'></div>
+                    <span className='text-green-700 font-medium'>
+                      &lt;18% (Rendah)
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -287,11 +347,29 @@ export default function DataStuntingPage() {
         </div>
       </div>
 
-      <div className='bg-white rounded-lg shadow-sm p-6'>
-        <h2 className='text-2xl font-bold text-gray-900 mb-4'>
-          Peta Prevalensi Stunting Kabupaten/Kota 2023
-        </h2>
-        <div className='w-full h-[600px]'>
+      <div className='bg-gradient-to-br from-white to-purple-50 rounded-2xl shadow-xl p-8 border border-purple-100'>
+        <div className='flex items-center mb-6'>
+          <div className='w-2 h-8 bg-gradient-to-b from-purple-500 to-third rounded-full mr-4'></div>
+          <IconChartArea
+            size={32}
+            className='text-purple-600 mr-3'
+          />
+          <h2 className='text-3xl font-bold bg-gradient-to-r from-purple-600 to-third bg-clip-text text-transparent'>
+            Peta Prevalensi Stunting Kabupaten/Kota 2023
+          </h2>
+        </div>
+        <div className='bg-gradient-to-r from-purple-500/10 to-third/10 rounded-lg p-4 mb-4'>
+          <div className='flex items-center gap-2'>
+            <IconUsers
+              size={20}
+              className='text-purple-600'
+            />
+            <p className='text-gray-700 font-medium'>
+              Data tingkat kabupaten/kota untuk analisis yang lebih detail
+            </p>
+          </div>
+        </div>
+        <div className='w-full h-[600px] bg-white rounded-xl shadow-lg p-4'>
           <div
             className='tableauPlaceholder'
             id='viz1748681242886'
@@ -372,22 +450,44 @@ export default function DataStuntingPage() {
         </div>
       </div>
 
-      <div className='bg-white rounded-lg shadow-sm p-6'>
-        <h2 className='text-lg font-semibold text-gray-900 mb-4'>
-          Tren Prevalensi Stunting Nasional
-        </h2>
-        <div className='w-full h-96'>
+      <div className='bg-gradient-to-br from-white to-green-50 rounded-2xl shadow-xl p-8 border border-green-100'>
+        <div className='flex items-center mb-6'>
+          <div className='w-2 h-8 bg-gradient-to-b from-green-500 to-secondary rounded-full mr-4'></div>
+          <IconChartLine
+            size={32}
+            className='text-green-600 mr-3'
+          />
+          <h2 className='text-3xl font-bold bg-gradient-to-r from-green-600 to-secondary bg-clip-text text-transparent'>
+            Tren Prevalensi Stunting Nasional
+          </h2>
+        </div>
+        <div className='bg-gradient-to-r from-green-500/10 to-secondary/10 rounded-lg p-4 mb-6'>
+          <div className='flex items-center gap-2'>
+            <IconTrendingDown
+              size={20}
+              className='text-green-600'
+            />
+            <p className='text-gray-700 font-medium'>
+              Analisis tren penurunan stunting Indonesia sepanjang 2023
+            </p>
+          </div>
+        </div>
+        <div className='w-full h-96 bg-white rounded-xl shadow-lg p-6'>
           <ResponsiveContainer
             width='100%'
             height='100%'
           >
             <LineChart data={stuntingData}>
-              <CartesianGrid strokeDasharray='3 3' />
+              <CartesianGrid
+                strokeDasharray='3 3'
+                stroke='#f0f0f0'
+              />
               <XAxis
                 dataKey='month'
                 angle={-45}
                 textAnchor='end'
                 height={80}
+                stroke='#6b7280'
               />
               <YAxis
                 label={{
@@ -396,6 +496,7 @@ export default function DataStuntingPage() {
                   position: 'insideLeft',
                 }}
                 domain={[15, 25]}
+                stroke='#6b7280'
               />
               <Tooltip
                 formatter={(value, name) => [
@@ -404,6 +505,12 @@ export default function DataStuntingPage() {
                     ? 'Prevalensi Aktual'
                     : 'Target Pemerintah',
                 ]}
+                contentStyle={{
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                }}
               />
               <Legend />
               <Line
@@ -426,36 +533,75 @@ export default function DataStuntingPage() {
             </LineChart>
           </ResponsiveContainer>
         </div>
-        <div className='mt-4 text-sm text-gray-600'>
-          <p>
-            Data menunjukkan tren penurunan prevalensi stunting dari 21.6% pada
-            Januari 2023 menjadi 18.0% pada Desember 2023. Target pemerintah
-            untuk mencapai 17.8% hampir tercapai.
-          </p>
+        <div className='mt-6 bg-gradient-to-r from-blue-50 to-green-50 p-6 rounded-xl border border-blue-200'>
+          <div className='flex items-start gap-3'>
+            <IconReportAnalytics
+              size={24}
+              className='text-blue-600 flex-shrink-0 mt-1'
+            />
+            <p className='text-gray-700 leading-relaxed font-medium'>
+              <strong>Analisis:</strong> Data menunjukkan tren penurunan
+              prevalensi stunting dari{' '}
+              <span className='text-red-600 font-bold'>21.6%</span> pada Januari
+              2023 menjadi{' '}
+              <span className='text-green-600 font-bold'>18.0%</span> pada
+              Desember 2023. Target pemerintah untuk mencapai{' '}
+              <span className='text-green-600 font-bold'>17.8%</span> hampir
+              tercapai dengan selisih hanya{' '}
+              <span className='text-orange-600 font-bold'>0.2%</span>.
+            </p>
+          </div>
         </div>
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-        <div className='bg-white rounded-lg shadow-sm p-6'>
-          <h3 className='text-sm font-medium text-gray-500'>
-            Prevalensi Saat Ini
-          </h3>
-          <p className='text-2xl font-bold text-red-600'>18.0%</p>
-          <p className='text-xs text-gray-500'>Desember 2023</p>
+        <div className='bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-xl p-8 text-white transform hover:scale-105 transition-all duration-300'>
+          <div className='flex items-center justify-between mb-4'>
+            <h3 className='text-lg font-semibold opacity-90'>
+              Prevalensi Saat Ini
+            </h3>
+            <IconAlertTriangle
+              size={32}
+              className='text-white'
+            />
+          </div>
+          <p className='text-4xl font-bold mb-2 drop-shadow-lg'>18.0%</p>
+          <p className='text-red-100 text-base'>Desember 2023</p>
+          <div className='mt-4 w-full bg-red-400/50 rounded-full h-2'>
+            <div className='bg-white h-2 rounded-full w-4/5'></div>
+          </div>
         </div>
 
-        <div className='bg-white rounded-lg shadow-sm p-6'>
-          <h3 className='text-sm font-medium text-gray-500'>
-            Target Pemerintah
-          </h3>
-          <p className='text-2xl font-bold text-green-600'>17.8%</p>
-          <p className='text-xs text-gray-500'>Target akhir 2023</p>
+        <div className='bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-xl p-8 text-white transform hover:scale-105 transition-all duration-300'>
+          <div className='flex items-center justify-between mb-4'>
+            <h3 className='text-lg font-semibold opacity-90'>
+              Target Pemerintah
+            </h3>
+            <IconTarget
+              size={32}
+              className='text-white'
+            />
+          </div>
+          <p className='text-4xl font-bold mb-2 drop-shadow-lg'>17.8%</p>
+          <p className='text-green-100 text-base'>Target akhir 2023</p>
+          <div className='mt-4 w-full bg-green-400/50 rounded-full h-2'>
+            <div className='bg-white h-2 rounded-full w-full'></div>
+          </div>
         </div>
 
-        <div className='bg-white rounded-lg shadow-sm p-6'>
-          <h3 className='text-sm font-medium text-gray-500'>Penurunan YoY</h3>
-          <p className='text-2xl font-bold text-blue-600'>-3.6%</p>
-          <p className='text-xs text-gray-500'>Dibanding 2022</p>
+        <div className='bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-xl p-8 text-white transform hover:scale-105 transition-all duration-300'>
+          <div className='flex items-center justify-between mb-4'>
+            <h3 className='text-lg font-semibold opacity-90'>Penurunan YoY</h3>
+            <IconTrendingDown
+              size={32}
+              className='text-white'
+            />
+          </div>
+          <p className='text-4xl font-bold mb-2 drop-shadow-lg'>-3.6%</p>
+          <p className='text-blue-100 text-base'>Dibanding 2022</p>
+          <div className='mt-4 w-full bg-blue-400/50 rounded-full h-2'>
+            <div className='bg-white h-2 rounded-full w-3/4'></div>
+          </div>
         </div>
       </div>
     </div>
